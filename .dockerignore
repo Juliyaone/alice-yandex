@@ -1,0 +1,7 @@
+# flyctl launch added from .gitignore
+# Игнорировать файлы с расширением .log
+**/*.log
+
+# Игнорировать каталог с именем "node_modules"
+**/node_modules
+fly.toml

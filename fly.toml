@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for fill-old-grass-3228 on 2023-12-18T05:08:37+03:00
+# fly.toml app configuration file generated for fill-floral-sound-8963 on 2023-12-18T05:16:04+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "fill-old-grass-3228"
+app = "fill-floral-sound-8963"
 primary_region = "ams"
 
 [build]

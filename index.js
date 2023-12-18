@@ -6,7 +6,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
-app.post('/authenticate', (req, res) => {
+app.get('/authenticate', (req, res) => {
   res.send('Hello World1111!');
 
 });
