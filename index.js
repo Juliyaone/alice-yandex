@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+app.use(express.urlencoded({ extended: true }));
+const axios = require('axios');
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -34,7 +36,9 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    if (response.data.success) {
+    console.log('response', response);
+
+    if (response.statusText === 'OK') {
       // Успешная аутентификация, перенаправляем пользователя
       const { client_id, redirect_uri, state } = req.query;
       const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&token=${response.data.token}`;
