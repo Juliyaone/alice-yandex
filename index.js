@@ -14,7 +14,7 @@ app.get('/v1.0/login', (req, res) => {
 
   console.log(client_id, redirect_uri, state);
   res.send(`
-    <form action="./api/users/auth.php" method="post">
+    <form action="/v1.0/auth" method="post">
 
       <label for="username">Логин:</label>
       <input type="text" id="username" name="username"><br>
@@ -25,7 +25,7 @@ app.get('/v1.0/login', (req, res) => {
   `);
 });
 
-app.post('/api/users/auth.php', async (req, res) => {
+app.post('/v1.0/auth', async (req, res) => {
   try {
     const { username, password } = req.body;
     // Отправляем запрос на PHP-сервер для аутентификации
