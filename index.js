@@ -12,7 +12,7 @@ app.get('/v1.0/login', (req, res) => {
   // const { client_id, redirect_uri, state } = req.query;
   // Отображаем форму для ввода логина и пароля
   res.send(`
-    <form action="./api/users/auth.php" method="post">
+    <form action="smart.horynize.ru/api/users/auth.php" method="post">
 
       <label for="username">Логин:</label>
       <input type="text" id="username" name="username"><br>
