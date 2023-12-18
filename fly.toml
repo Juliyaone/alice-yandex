@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for fill-delicate-fog-7148 on 2023-12-18T05:25:40+03:00
+# fly.toml app configuration file generated for fill-black-darkness-1961 on 2023-12-18T05:27:37+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "fill-delicate-fog-7148"
-primary_region = "cdg"
+app = "fill-black-darkness-1961"
+primary_region = "ams"
 
 [build]
 
