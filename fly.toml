@@ -1,10 +1,10 @@
-# fly.toml app configuration file generated for fill-floral-sound-8963 on 2023-12-18T05:16:04+03:00
+# fly.toml app configuration file generated for fill-damp-hill-4323 on 2023-12-18T05:22:04+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = "fill-floral-sound-8963"
-primary_region = "ams"
+app = "fill-damp-hill-4323"
+primary_region = "cdg"
 
 [build]
 
