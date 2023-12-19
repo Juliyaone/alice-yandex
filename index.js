@@ -82,9 +82,11 @@ app.post('/v1.0/token', async (req, res) => {
 
     // Генерируем токены
     const accessToken = crypto.randomBytes(32).toString('hex'); // Простая генерация токена доступа
+    console.log('userId', userId);
 
+    res.send(userId);
     // Сохраняем токен в базу
-    const response = await axios.post('http://smart.horynize.ru/api/users/token_save.php', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
       userId: Number(userId),
       tokenYandex: accessToken,
     });
