@@ -91,12 +91,16 @@ app.post('/v1.0/token', async (req, res) => {
 
     const refreshToken = crypto.randomBytes(32).toString('hex'); // Простая генерация refresh токена
 
-    // Отправляем токены обратно
-    res.json({
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      expires_in: 3600, // 1 час, к примеру
-    });
+
+    if (response.status === 200) {
+
+      // Отправляем токены обратно
+      res.json({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+        expires_in: 3600, // 1 час, к примеру
+      });
+    }
   } else {
     res.status(400).json({ error: 'Invalid request' });
   }
