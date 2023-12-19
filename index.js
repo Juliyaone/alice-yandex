@@ -41,7 +41,9 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    if (response.statusText === 'OK') {
+if (response.statusText === 'OK' && response.data && response.data[0] && response.data[0].id_user) {
+      const userId = response.data[0].id_user; // Извлечение id пользователя из ответа
+      console.log('UserID:', userId);
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
@@ -79,6 +81,11 @@ app.post('/v1.0/token', (req, res) => {
 
     // Генерируем токены
     const accessToken = crypto.randomBytes(32).toString('hex'); // Простая генерация токена доступа
+
+
+    // http://smart.horynize.ru/api/users/token_save.php
+
+
     const refreshToken = crypto.randomBytes(32).toString('hex'); // Простая генерация refresh токена
 
     // Отправляем токены обратно
@@ -91,21 +98,6 @@ app.post('/v1.0/token', (req, res) => {
     res.status(400).json({ error: 'Invalid request' });
   }
 });
-
-// Функция для проверки client_id и client_secret
-function checkClientCredentials(client_id, client_secret) {
-  // Сравните client_id и client_secret с сохраненными значениями
-  // Это может быть запрос к базе данных или проверка с хранящимися в памяти значениями
-  // ...
-}
-
-// Функция для проверки кода авторизации
-function checkAuthorizationCode(code) {
-  // Проверьте, что код существует, действителен и не истек
-  // Это также может потребовать запроса к базе данных или временному хранилищу
-  // ...
-}
-
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
