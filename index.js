@@ -14,7 +14,7 @@ app.get('/v1.0/login', (req, res) => {
   const { client_id, redirect_uri, state } = req.query;
   // Отображаем форму для ввода логина и пароля
 
-  console.log(client_id, redirect_uri, state, response_type);
+  console.log(client_id, redirect_uri, state);
 
   res.send(`
     <form action="/v1.0/auth" method="post">
@@ -33,7 +33,7 @@ app.get('/v1.0/login', (req, res) => {
 
 app.post('/v1.0/auth', async (req, res) => {
   try {
-    const { username, password, client_id, redirect_uri, state, response_type} = req.body;
+    const { username, password, client_id, redirect_uri, state} = req.body;
     // Отправляем запрос на PHP-сервер для аутентификации
     const response = await axios.post('http://smart.horynize.ru/api/users/auth.php', {
       username,
