@@ -5,6 +5,8 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require('axios');
 const crypto = require('crypto');
 
+const authorizationCodes = {};
+
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
@@ -42,6 +44,18 @@ app.post('/v1.0/auth', async (req, res) => {
     if (response.statusText === 'OK') {
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
+      const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
+
+
+      // Сохраняем код в памяти с указанием времени истечения
+      authorizationCodes[authCode] = {
+        clientId: client_id,
+        expiresAt: Date.now() + expiresIn * 1000,
+        // Дополнительные данные, если необходимо, например, userId
+      };
+
+      // Устанавливаем таймер для удаления кода по истечении времени
+      setTimeout(() => delete authorizationCodes[authCode], expiresIn * 1000);
 
       // Перенаправляем пользователя обратно на redirect_uri с кодом авторизации
       const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&code=${authCode}`;
@@ -57,13 +71,12 @@ app.post('/v1.0/auth', async (req, res) => {
 
 // Эндпоинт для обмена кода авторизации на токены
 app.post('/v1.0/token', (req, res) => {
-  const { code, client_id, client_secret } = req.body;
-console.log('ляляляля', code, client_id, client_secret);
-  // Проверяем code, client_id и client_secret
-  // Это должно быть реализовано в соответствии с вашей внутренней логикой безопасности
-  // ...
+ const { code, client_id, client_secret } = req.body;
 
-  if (/* проверка прошла успешно */) {
+  const codeData = authorizationCodes[code];
+
+    if (codeData && Date.now() < codeData.expiresAt && codeData.clientId === client_id) {
+
     // Генерируем токены
     const accessToken = crypto.randomBytes(32).toString('hex'); // Простая генерация токена доступа
     const refreshToken = crypto.randomBytes(32).toString('hex'); // Простая генерация refresh токена
@@ -78,6 +91,20 @@ console.log('ляляляля', code, client_id, client_secret);
     res.status(400).json({ error: 'Invalid request' });
   }
 });
+
+// Функция для проверки client_id и client_secret
+function checkClientCredentials(client_id, client_secret) {
+  // Сравните client_id и client_secret с сохраненными значениями
+  // Это может быть запрос к базе данных или проверка с хранящимися в памяти значениями
+  // ...
+}
+
+// Функция для проверки кода авторизации
+function checkAuthorizationCode(code) {
+  // Проверьте, что код существует, действителен и не истек
+  // Это также может потребовать запроса к базе данных или временному хранилищу
+  // ...
+}
 
 
 app.listen(port, () => {
