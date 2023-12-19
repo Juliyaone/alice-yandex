@@ -6,7 +6,7 @@ const axios = require('axios');
 const crypto = require('crypto');
 
 const authorizationCodes = {};
-const userId = '';
+let userId = '';
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -42,7 +42,8 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-if (response.statusText === 'OK' && response.data && response.data[0] && response.data[0].id_user) {
+    if (response.status === 200 && response.data && response.data[0] && response.data[0].id_user) {
+
       userId = response.data[0].id_user; // Извлечение id пользователя из ответа
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
