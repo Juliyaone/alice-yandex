@@ -84,7 +84,7 @@ app.post('/v1.0/token', async (req, res) => {
 
     // Сохраняем токен в базу
     const response = await axios.post('http://smart.horynize.ru/api/users/token_save.php', {
-      userId: userId,
+      userId: Number(userId),
       tokenYandex: accessToken,
     });
 
