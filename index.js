@@ -45,7 +45,7 @@ app.post('/v1.0/auth', async (req, res) => {
     if (response.statusText === 'OK') {
       // Успешная аутентификация, перенаправляем пользователя
 
-            res.send('Авторизация прошла успешно!');
+            // res.send('Авторизация прошла успешно!');
 
       const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&token=${response.data.token}`;
       res.redirect(redirectUrl);
