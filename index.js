@@ -15,8 +15,12 @@ app.get('/v1.0/login', (req, res) => {
   // Отображаем форму для ввода логина и пароля
 
   console.log(client_id, redirect_uri, state);
+
   res.send(`
     <form action="/v1.0/auth" method="post">
+      <input type="hidden" name="client_id" value="${client_id}">
+      <input type="hidden" name="redirect_uri" value="${redirect_uri}">
+      <input type="hidden" name="state" value="${state}">
 
       <label for="username">Логин:</label>
       <input type="text" id="username" name="username"><br>
@@ -29,7 +33,7 @@ app.get('/v1.0/login', (req, res) => {
 
 app.post('/v1.0/auth', async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, client_id, redirect_uri, state } = req.body;
     // Отправляем запрос на PHP-сервер для аутентификации
     const response = await axios.post('http://smart.horynize.ru/api/users/auth.php', {
       username,
@@ -43,9 +47,8 @@ app.post('/v1.0/auth', async (req, res) => {
 
             res.send('Авторизация прошла успешно!');
 
-      // const { client_id, redirect_uri, state } = req.query;
-      // const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&token=${response.data.token}`;
-      // res.redirect(redirectUrl);
+      const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&token=${response.data.token}`;
+      res.redirect(redirectUrl);
     } else {
       res.send('Ошибка аутентификации');
     }
