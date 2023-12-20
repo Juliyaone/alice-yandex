@@ -58,11 +58,11 @@ app.post('/v1.0/auth', async (req, res) => {
 
       if (response.data?.jwt) {
         const internalToken = response.data['0'].jwt;
-        console.log('jwt', response.data['0']?.jwt);
+        // console.log('jwt', response.data['0']?.jwt);
       }
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
-      const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
+      const expiresIn = 60; // Время жизни кода в секундах (например, 10 минут)
 
 
       // Сохраняем код в памяти с указанием времени истечения
