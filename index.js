@@ -50,13 +50,13 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    console.log('responseauth', response.data);
+    // console.log('responseauth', response.data);
 
     if (response.status === 200 && response.data) {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
 
-      if (response.data['0']?.jwt) {
+      if (response.data?.jwt) {
         const internalToken = response.data['0'].jwt;
         console.log('jwt', response.data['0']?.jwt);
       }
