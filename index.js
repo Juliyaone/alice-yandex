@@ -59,12 +59,12 @@ app.post('/v1.0/auth', async (req, res) => {
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
 
       // Успешная аутентификация, генерируем код авторизации
-      const authCode1 = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
+      const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
 
 
       // Сохраняем код в памяти с указанием времени истечения
-      authorizationCodes[authCode1] = {
+      authorizationCodes[authCode] = {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
         userId: userId
@@ -72,10 +72,10 @@ app.post('/v1.0/auth', async (req, res) => {
       };
 
       // Устанавливаем таймер для удаления кода по истечении времени
-      setTimeout(() => delete authorizationCodes[authCode1], expiresIn * 1000);
+      setTimeout(() => delete authorizationCodes[authCode], expiresIn * 1000);
 
       // Перенаправляем пользователя обратно на redirect_uri с кодом авторизации
-      const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&code=${authCode1}`;
+      const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&code=${authCode}`;
       res.redirect(redirectUrl);
     } else {
       res.send('Ошибка аутентификации');
