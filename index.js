@@ -4,9 +4,12 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 const axios = require('axios');
 const crypto = require('crypto');
+const morgan = require('morgan');
 
 const authorizationCodes = {};
 let userId = '';
+
+app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
@@ -42,9 +45,11 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    if (response.status === 200 && response.data && response.data[0] && response.data[0].id_user) {
+    console.log('responseauth', response.data);
 
-      userId = response.data[0].id_user; // Извлечение id пользователя из ответа
+    if (response.status === 200 && response.data) {
+
+      userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
@@ -54,6 +59,7 @@ app.post('/v1.0/auth', async (req, res) => {
       authorizationCodes[authCode] = {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
+        userId: userId
         // Дополнительные данные, если необходимо, например, userId
       };
 
@@ -84,7 +90,7 @@ app.post('/v1.0/token', async (req, res) => {
     const accessToken = crypto.randomBytes(32).toString('hex'); // Простая генерация токена доступа
     console.log('userId', userId);
 
-    res.send(userId);
+    // res.send(userId);
     // Сохраняем токен в базу
     const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
       userId: Number(userId),
