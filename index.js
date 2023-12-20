@@ -55,7 +55,7 @@ app.post('/v1.0/auth', async (req, res) => {
 
     console.log('responseAUTH', response);
 
-    if (response.status === 200 && response.data && response.data?.user[0]) {
+    if (response.status === 200 && response.data) {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
       userJwt = response.data?.jwt; // Извлечение jwt пользователя из ответа 
