@@ -142,7 +142,7 @@ app.post('/v1.0/refresh_token', async (req, res) => {
 // Сохраняем рефреш токен в базу
 async function saveRefreshTokenToDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/token_save', {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -161,7 +161,7 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenInDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token', {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -179,26 +179,26 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 
 //Информация об устройствах пользователя
-// app.get('/v1.0/user/devices', async (req, res) => {
-//   try {
-//     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/all-vent-units.php', {
-//     "userId": Number(userId),
-//     "status": '1'
-// }, {
-//     headers: {
-//         'Authorization': `Bearer ${internalToken}`
-//     }
-// });
+app.get('/v1.0/user/devices', async (req, res) => {
+  try {
+    const responseUserDevices = await axios.post('https://smart.horynize.ru/api/all-vent-units', {
+    "userId": Number(userId),
+    "status": '1'
+}, {
+    headers: {
+        'Authorization': `Bearer ${internalToken}`
+    }
+});
 
-//     if (responseUserDevices.data ) {
-//       return responseUserDevices;
-//     } else {
-//       return error;
-//     }
-//   } catch (error) {
-//     console.error('', error);
-//   }
-// })
+    if (responseUserDevices.data ) {
+      return responseUserDevices;
+    } else {
+      return error;
+    }
+  } catch (error) {
+    console.error('', error);
+  }
+})
 
 
 
