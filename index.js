@@ -5,6 +5,11 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require('axios');
 const crypto = require('crypto');
 const morgan = require('morgan');
+const jwt = require('jsonwebtoken');
+
+const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
+const clientSecret = process.env.CLIENT_SECRET;
+const clientId = process.env.CLIENT_ID;
 
 const authorizationCodes = {};
 let userId = '';
@@ -80,39 +85,94 @@ app.post('/v1.0/auth', async (req, res) => {
 
 // Эндпоинт для обмена кода авторизации на токены
 app.post('/v1.0/token', async (req, res) => {
- const { code, client_id, client_secret } = req.body;
+  const { code, client_id } = req.body;
 
   const codeData = authorizationCodes[code];
 
-    if (codeData && Date.now() < codeData.expiresAt && codeData.clientId === client_id) {
+  if (codeData && Date.now() < codeData.expiresAt && codeData.clientId === client_id) {
+    const userId = codeData.userId; // Вытаскиваем userId из кода
 
     // Генерируем токены
-    const accessToken = crypto.randomBytes(32).toString('hex'); // Простая генерация токена доступа
-    console.log('userId', userId);
+    const accessToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: '1h' });
+    const refreshToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: '7d' });
 
-    // res.send(userId);
-    // Сохраняем токен в базу
-    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
-      userId: Number(userId),
-      tokenYandex: accessToken,
+    // Сохраняем refresh token в базу данных
+    await saveRefreshTokenToDatabase(userId, refreshToken);
+
+    res.json({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      expires_in: 3600, // 1 час
     });
-
-    const refreshToken = crypto.randomBytes(32).toString('hex'); // Простая генерация refresh токена
-
-
-    if (response.status === 200) {
-
-      // Отправляем токены обратно
-      res.json({
-        access_token: accessToken,
-        refresh_token: refreshToken,
-        expires_in: 3600, // 1 час, к примеру
-      });
-    }
   } else {
-    res.status(400).json({ error: 'Invalid request' });
+    res.status(400).json({ error: 'Invalid or expired authorization code' });
   }
 });
+
+app.post('/v1.0/refresh_token', async (req, res) => {
+  const { refresh_token } = req.body;
+  try {
+    // Проверяем refresh_token
+    const decoded = jwt.verify(refresh_token, secretKeyForToken);
+
+    const tokenIsValid = await checkRefreshTokenInDatabase(decoded.userId, refresh_token);
+
+    if (tokenIsValid) {
+      // Генерируем новый access_token
+      const accessToken = jwt.sign({ userId: decoded.userId }, secretKeyForToken, { expiresIn: '1h' });
+
+      res.json({
+        access_token: accessToken,
+        expires_in: 3600, // 1 час
+      });
+    } else {
+      throw new Error('Invalid refresh token');
+    }
+  } catch (error) {
+    res.status(401).json({ error: 'Invalid or expired refresh token' });
+  }
+});
+
+
+// Сохраняем рефреш токен в базу
+async function saveRefreshTokenToDatabase(userId, refreshToken) {
+  try {
+    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
+      userId: Number(userId),
+      tokenYandex: refreshToken
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to save refresh token');
+    }
+
+    console.log('Refresh token saved successfully');
+  } catch (error) {
+    console.error('Error saving refresh token:', error);
+    throw error; // Выбрасываем ошибку для обработки на более высоком уровне
+  }
+}
+
+// Проверяем рефреш токен в базе
+async function checkRefreshTokenInDatabase(userId, refreshToken) {
+  try {
+    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
+      userId: Number(userId),
+      tokenYandex: refreshToken
+    });
+
+    if (response.data && response.data.valid) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking refresh token:', error);
+    return false; // В случае ошибки считаем токен недействительным
+  }
+}
+
+
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
