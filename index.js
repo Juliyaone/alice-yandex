@@ -13,7 +13,7 @@ const clientId = process.env.CLIENT_ID;
 
 const authorizationCodes = {};
 let userId = '';
-const internalToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJhdWQiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJpYXQiOjE3MDMwNDY1MzUsIm5iZiI6MTcwMzA0NjUzNSwiZXhwIjoxNzAzMDU0MzM1LCJkYXRhIjp7ImlkX3VzZXIiOjIzLCJ1c2VybmFtZSI6IlZpY3RvcnVuaTEiLCJlbWFpbCI6InR1cmJvZWRhQGdtYWlsLmNvbSJ9fQ.-ONF-Z__v4aeiUlH2S6fdJNzJ6uhUr3qMROKiSi-2mw";
+let userJwt = '';
 
 
 app.use(morgan('dev'));
@@ -46,33 +46,30 @@ app.get('/v1.0/login', (req, res) => {
 app.post('/v1.0/auth', async (req, res) => {
   try {
     const { username, password, client_id, redirect_uri, state } = req.body;
-    
+
     // Отправляем запрос на PHP-сервер для аутентификации
-    const response = await axios.post('https://smart.horynize.ru/api/users/auth.php', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/auth', {
       username,
       password
-    }, {
-    headers: {
-        'Authorization': `Bearer ${internalToken}`
-    }
-  });
+    });
 
     console.log('responseAUTH', response);
 
-    if (response.status === 200 && response.data) {
+    if (response.status === 200 && response.data && response.data?.user[0]) {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
+      userJwt = response.data?.jwt; // Извлечение jwt пользователя из ответа 
 
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
-      const expiresIn = 600; // Время жизни кода в секундах (например, 10 минут)
+      const expiresIn = 120; // Время жизни кода в секундах (например, 2 минуты)
 
 
       // Сохраняем код в памяти с указанием времени истечения
       authorizationCodes[authCode] = {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
-        userId: userId
+        userId: userId,
         // Дополнительные данные, если необходимо, например, jwt
       };
 
