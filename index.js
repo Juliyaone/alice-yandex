@@ -45,7 +45,7 @@ app.post('/v1.0/auth', async (req, res) => {
   try {
     const { username, password, client_id, redirect_uri, state } = req.body;
     // Отправляем запрос на PHP-сервер для аутентификации
-    const response = await axios.post('http://smart.horynize.ru/api/users/auth.php', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/auth.php', {
       username,
       password
     });
@@ -171,6 +171,31 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
     return false; // В случае ошибки считаем токен недействительным
   }
 }
+
+
+//Информация об устройствах пользователя
+app.get('/v1.0/user/devices', async (req, res) => {
+  try {
+    const responseUserDevices = await axios.post('https://smart.horynize.ru/api/all-vent-units.php', {
+    "userId": Number(userId),
+    "status": '1'
+}, {
+    headers: {
+        'Authorization': `Bearer ваш_токен_здесь`
+    }
+});
+
+    if (responseUserDevices.data ) {
+      return responseUserDevices;
+    } else {
+      return error;
+    }
+  } catch (error) {
+    console.error('', error);
+  }
+})
+
+
 
 
 
