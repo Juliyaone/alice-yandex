@@ -46,11 +46,16 @@ app.get('/v1.0/login', (req, res) => {
 app.post('/v1.0/auth', async (req, res) => {
   try {
     const { username, password, client_id, redirect_uri, state } = req.body;
+    
     // Отправляем запрос на PHP-сервер для аутентификации
     const response = await axios.post('https://smart.horynize.ru/api/users/auth.php', {
       username,
       password
-    });
+    }, {
+    headers: {
+        'Authorization': `Bearer ${internalToken}`
+    }
+  });
 
     console.log('responseAUTH', response);
 
