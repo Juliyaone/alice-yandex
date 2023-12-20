@@ -150,7 +150,7 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
     console.log('Refresh token saved successfully');
   } catch (error) {
     console.error('Error saving refresh token:', error);
-    throw error; // Выбрасываем ошибку для обработки на более высоком уровне
+    throw error;
   }
 }
 
