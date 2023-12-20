@@ -13,6 +13,8 @@ const clientId = process.env.CLIENT_ID;
 
 const authorizationCodes = {};
 let userId = '';
+const internalToken = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJhdWQiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJpYXQiOjE3MDMwNDY1MzUsIm5iZiI6MTcwMzA0NjUzNSwiZXhwIjoxNzAzMDU0MzM1LCJkYXRhIjp7ImlkX3VzZXIiOjIzLCJ1c2VybmFtZSI6IlZpY3RvcnVuaTEiLCJlbWFpbCI6InR1cmJvZWRhQGdtYWlsLmNvbSJ9fQ.-ONF-Z__v4aeiUlH2S6fdJNzJ6uhUr3qMROKiSi-2mw";
+
 
 app.use(morgan('dev'));
 
@@ -56,9 +58,7 @@ app.post('/v1.0/auth', async (req, res) => {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
 
-      if (response.data?.jwt) {
-        const internalToken = response.data['0'].jwt;
-        // console.log('jwt', response.data['0']?.jwt);
+        
       }
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
@@ -186,7 +186,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
     "status": '1'
 }, {
     headers: {
-        'Authorization': `Bearer ваш_токен_здесь`
+        'Authorization': `Bearer ${internalToken}`
     }
 });
 
