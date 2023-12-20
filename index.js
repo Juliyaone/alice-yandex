@@ -52,8 +52,6 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    // console.log('responseauth', response.data);
-
     if (response.status === 200 && response.data) {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
@@ -68,7 +66,7 @@ app.post('/v1.0/auth', async (req, res) => {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
         userId: userId
-        // Дополнительные данные, если необходимо, например, userId
+        // Дополнительные данные, если необходимо, например, jwt
       };
 
       // Устанавливаем таймер для удаления кода по истечении времени
@@ -177,26 +175,26 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 
 //Информация об устройствах пользователя
-app.get('/v1.0/user/devices', async (req, res) => {
-  try {
-    const responseUserDevices = await axios.post('https://smart.horynize.ru/api/all-vent-units.php', {
-    "userId": Number(userId),
-    "status": '1'
-}, {
-    headers: {
-        'Authorization': `Bearer ${internalToken}`
-    }
-});
+// app.get('/v1.0/user/devices', async (req, res) => {
+//   try {
+//     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/all-vent-units.php', {
+//     "userId": Number(userId),
+//     "status": '1'
+// }, {
+//     headers: {
+//         'Authorization': `Bearer ${internalToken}`
+//     }
+// });
 
-    if (responseUserDevices.data ) {
-      return responseUserDevices;
-    } else {
-      return error;
-    }
-  } catch (error) {
-    console.error('', error);
-  }
-})
+//     if (responseUserDevices.data ) {
+//       return responseUserDevices;
+//     } else {
+//       return error;
+//     }
+//   } catch (error) {
+//     console.error('', error);
+//   }
+// })
 
 
 
