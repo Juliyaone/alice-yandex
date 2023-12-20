@@ -52,6 +52,8 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
+    console.log('responseAUTH', response);
+
     if (response.status === 200 && response.data) {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
