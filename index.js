@@ -58,8 +58,6 @@ app.post('/v1.0/auth', async (req, res) => {
 
       userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
 
-        
-      }
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
       const expiresIn = 60; // Время жизни кода в секундах (например, 10 минут)
