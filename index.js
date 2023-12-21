@@ -53,16 +53,20 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    console.log('responseAUTH', response);
+    console.log('responseAUTH', response.data);
+      // console.log('userId', response.data["0"]?.id_user);
+      // console.log('userJwt', response.data["0"]?.jwt);
+
 
     if (response.status === 200 && response.data) {
 
-      userId = response.data?.user[0]?.id_user; // Извлечение id пользователя из ответа
-      userJwt = response.data?.jwt; // Извлечение jwt пользователя из ответа 
-
+      userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
+      userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
+      console.log('userId', userId);
+      console.log('userJwt', userJwt);
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
-      const expiresIn = 120; // Время жизни кода в секундах (например, 2 минуты)
+      const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
 
 
       // Сохраняем код в памяти с указанием времени истечения
