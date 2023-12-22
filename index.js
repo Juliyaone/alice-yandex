@@ -4,7 +4,7 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 const axios = require('axios');
 const crypto = require('crypto');
-const morgan = require('morgan');
+// const morgan = require('morgan');
 const jwt = require('jsonwebtoken');
 
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
@@ -16,7 +16,7 @@ let userId = '';
 let userJwt = '';
 
 
-app.use(morgan('dev'));
+// app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
   res.send('Hello World!');
