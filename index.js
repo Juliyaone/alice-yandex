@@ -53,11 +53,6 @@ app.post('/v1.0/auth', async (req, res) => {
       password
     });
 
-    // console.log('responseAUTH', response.data);
-      // console.log('userId', response.data["0"]?.id_user);
-      // console.log('userJwt', response.data["0"]?.jwt);
-
-
     if (response.status === 200 && response.data) {
 
       userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
@@ -73,7 +68,7 @@ app.post('/v1.0/auth', async (req, res) => {
       authorizationCodes[authCode] = {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
-        userId: userId,
+        // userId: userId,
         // Дополнительные данные, если необходимо, например, jwt
       };
 
