@@ -101,8 +101,12 @@ app.post('/v1.0/token', async (req, res) => {
     const refreshToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: '7d' });
 
     // Сохраняем refresh token в базу данных
-    await saveRefreshTokenToDatabase(userId, refreshToken);
-
+      try {
+        await saveRefreshTokenToDatabase(userId, refreshToken);
+      } catch (innerError) {
+        console.error('Error saving refresh token:', innerError);
+        // Обработка ошибки сохранения refresh token
+      }
     res.json({
       access_token: accessToken,
       refresh_token: refreshToken,
