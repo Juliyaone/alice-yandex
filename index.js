@@ -2,14 +2,20 @@ const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
+
 const axios = require('axios');
 const crypto = require('crypto');
 // const morgan = require('morgan');
 const jwt = require('jsonwebtoken');
 
+require('dotenv').config();
+
+
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 const clientSecret = process.env.CLIENT_SECRET;
 const clientId = process.env.CLIENT_ID;
+
+console.log('secretKeyForToken', secretKeyForToken);
 
 const authorizationCodes = {};
 let userId = '';
