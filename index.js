@@ -145,7 +145,7 @@ app.post('/v1.0/refresh_token', async (req, res) => {
 // Сохраняем рефреш токен в базу
 async function saveRefreshTokenToDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/token_save', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -164,7 +164,7 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenInDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token', {
+    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
