@@ -200,7 +200,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
     "status": '1'
 }, {
     headers: {
-        'Authorization': `Bearer ${internalToken}`
+        'Authorization': `Bearer ${userJwt}`
     }
 });
 
