@@ -33,6 +33,25 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+// HEAD /v1.0/ Проверка доступности Endpoint URL провайдера
+app.head('/v1.0/', (req, res) => {
+  res.status(200).send();
+});
+
+// POST /v1.0/user/unlink Оповещение о разъединении аккаунтов
+app.post('/v1.0/user/unlink', async (req, res) => {
+  try {
+    // Здесь должна быть ваша логика для обработки разъединения аккаунтов
+    console.log('User account unlinked');
+    res.status(200).send({ message: 'Account successfully unlinked' });
+  } catch (error) {
+    console.error('Error unlinked account:', error);
+    res.status(500).send({ error: 'Error unlinked account' });
+  }
+});
+
+
+
 // Страница авторизации
 app.get('/v1.0/login', (req, res) => {
  
@@ -192,6 +211,32 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 }
 
 
+// POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
+app.post('/v1.0/user/devices/query', async (req, res) => {
+  try {
+    // Здесь должна быть ваша логика для получения состояний устройств
+    const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
+    res.status(200).send(devicesStatus);
+  } catch (error) {
+    console.error('Error querying device statuses:', error);
+    res.status(500).send({ error: 'Error querying device statuses' });
+  }
+});
+
+// POST /v1.0/user/devices/action Изменение состояния у устройств
+app.post('/v1.0/user/devices/action', async (req, res) => {
+  try {
+    // Здесь должна быть ваша логика для изменения состояния устройства
+    console.log('Device action requested', req.body);
+    // Выполните действие на основе тела запроса req.body
+    res.status(200).send({ message: 'Device action executed successfully' });
+  } catch (error) {
+    console.error('Error performing action on device:', error);
+    res.status(500).send({ error: 'Error performing action on device' });
+  }
+});
+
+
 // Информация об устройствах пользователя
 app.get('/v1.0/user/devices', async (req, res) => {
   try {
@@ -203,6 +248,8 @@ app.get('/v1.0/user/devices', async (req, res) => {
         'Authorization': `Bearer ${userJwt}`
     }
 });
+
+console.log('responseUserDevices.data', responseUserDevices.data);
 
     if (responseUserDevices.data ) {
       return responseUserDevices;
