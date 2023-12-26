@@ -334,7 +334,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
         room: 'device.room',
         type: 'thermostat.ac', // Тип устройства, должен соответствовать поддерживаемым типам Яндекса
         // custom_data: device.custom_data, // Это поле должно быть в вашем API, если оно есть
-        capabilities: [], // Тут должен быть массив возможностей устройства
+        capabilities: capabilities, // Тут должен быть массив возможностей устройства
         properties: device.properties, // Тут должен быть массив свойств устройства
         device_info: { // Дополнительная информация об устройстве
           manufacturer: device.manufacturer,
