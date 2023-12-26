@@ -328,21 +328,77 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Форматируем ответ согласно требованиям Яндекса
     const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
       return {
-        id: device.id_controller, // Пример, нужно заменить на реальные поля из вашего API
-        name: 'Название вентиляционной установки',
-        description: 'Вентиляционная установка',
-        room: 'device.room',
-        type: 'thermostat.ac', // Тип устройства, должен соответствовать поддерживаемым типам Яндекса
-        // custom_data: device.custom_data, // Это поле должно быть в вашем API, если оно есть
-        capabilities: capabilities, // Тут должен быть массив возможностей устройства
-        properties: device.properties, // Тут должен быть массив свойств устройства
-        device_info: { // Дополнительная информация об устройстве
-          manufacturer: device.manufacturer,
-          model: device.model,
-          hw_version: device.hw_version,
-          sw_version: device.sw_version
-        }
-      };
+ "capabilities": [{
+   "type": "devices.capabilities.range",
+   "retrievable": true,
+   "parameters": {
+    "instance": "temperature",
+    "random_access": true,
+    "range": {
+     "max": 33,
+     "min": 18,
+     "precision": 1
+    },
+    "unit": "unit.temperature.celsius"
+   }
+  },
+  {
+   "type": "devices.capabilities.mode",
+   "retrievable": true,
+   "parameters": {
+    "instance": "fan_speed",
+    "modes": [{
+      "value": "high"
+     },
+     {
+      "value": "medium"
+     },
+     {
+      "value": "low"
+     },
+     {
+      "value": "auto"
+     }
+    ]
+   }
+  },
+  {
+   "type": "devices.capabilities.mode",
+   "retrievable": true,
+   "parameters": {
+    "instance": "thermostat",
+    "modes": [{
+      "value": "fan_only"
+     },
+     {
+      "value": "heat"
+     },
+     {
+      "value": "cool"
+     },
+     {
+      "value": "dry"
+     },
+     {
+      "value": "auto"
+     }
+    ]
+   }
+  },
+  {
+   "type": "devices.capabilities.on_off",
+   "retrievable": true
+  }
+ ],
+ "properties": [{
+  "type": "devices.properties.float",
+  "retrievable": true,
+  "parameters": {
+   "instance": "temperature",
+   "unit": "unit.celsius"
+  }
+ }]
+}
     });
 
     // Отправляем ответ
