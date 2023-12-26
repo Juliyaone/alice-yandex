@@ -15,7 +15,7 @@ const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 const clientSecret = process.env.CLIENT_SECRET;
 const clientId = process.env.CLIENT_ID;
 
-console.log('secretKeyForToken', secretKeyForToken);
+// console.log('secretKeyForToken', secretKeyForToken);
 
 const authorizationCodes = {};
 let userId = '';
@@ -287,14 +287,14 @@ capabilities.push({
 
 // Конечно, вы должны заполнить массив capabilities данными, полученными от вашего API.
 // Например, если у вас есть объект device, который содержит информацию о возможностях устройства, вы можете преобразовать его следующим образом:
-const deviceCapabilities = device.capabilities.map(capability => {
-    return {
-        "type": capability.type,
-        "retrievable": capability.retrievable,
-        "reportable": capability.reportable,
-        "parameters": capability.parameters
-    };
-});
+// const deviceCapabilities = device.capabilities.map(capability => {
+//     return {
+//         "type": capability.type,
+//         "retrievable": capability.retrievable,
+//         "reportable": capability.reportable,
+//         "parameters": capability.parameters
+//     };
+// });
 
 // Информация об устройствах пользователя
 app.get('/v1.0/user/devices', async (req, res) => {

@@ -59,14 +59,14 @@ capabilities.push({
 
 // Конечно, вы должны заполнить массив capabilities данными, полученными от вашего API.
 // Например, если у вас есть объект device, который содержит информацию о возможностях устройства, вы можете преобразовать его следующим образом:
-const deviceCapabilities = device.capabilities.map(capability => {
-    return {
-        "type": capability.type,
-        "retrievable": capability.retrievable,
-        "reportable": capability.reportable,
-        "parameters": capability.parameters
-    };
-});
+// const deviceCapabilities = device.capabilities.map(capability => {
+//     return {
+//         "type": capability.type,
+//         "retrievable": capability.retrievable,
+//         "reportable": capability.reportable,
+//         "parameters": capability.parameters
+//     };
+// });
 
 // Информация об устройствах пользователя
 router.get('/v1.0/user/devices', async (req, res) => {
