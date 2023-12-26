@@ -309,7 +309,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
       "status": '1'
     }, {
       headers: {
-        'Authorization': userJwtYandex
+        'Authorization': `Bearer ${userJwt}`
       }
     });
 
@@ -328,77 +328,77 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Форматируем ответ согласно требованиям Яндекса
     const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
       return {
- "capabilities": [{
-   "type": "devices.capabilities.range",
-   "retrievable": true,
-   "parameters": {
-    "instance": "temperature",
-    "random_access": true,
-    "range": {
-     "max": 33,
-     "min": 18,
-     "precision": 1
-    },
-    "unit": "unit.temperature.celsius"
-   }
-  },
-  {
-   "type": "devices.capabilities.mode",
-   "retrievable": true,
-   "parameters": {
-    "instance": "fan_speed",
-    "modes": [{
-      "value": "high"
-     },
-     {
-      "value": "medium"
-     },
-     {
-      "value": "low"
-     },
-     {
-      "value": "auto"
-     }
-    ]
-   }
-  },
-  {
-   "type": "devices.capabilities.mode",
-   "retrievable": true,
-   "parameters": {
-    "instance": "thermostat",
-    "modes": [{
-      "value": "fan_only"
-     },
-     {
-      "value": "heat"
-     },
-     {
-      "value": "cool"
-     },
-     {
-      "value": "dry"
-     },
-     {
-      "value": "auto"
-     }
-    ]
-   }
-  },
-  {
-   "type": "devices.capabilities.on_off",
-   "retrievable": true
-  }
- ],
- "properties": [{
-  "type": "devices.properties.float",
-  "retrievable": true,
-  "parameters": {
-   "instance": "temperature",
-   "unit": "unit.celsius"
-  }
- }]
-}
+        "capabilities": [{
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "random_access": true,
+            "range": {
+            "max": 33,
+            "min": 18,
+            "precision": 1
+            },
+            "unit": "unit.temperature.celsius"
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "fan_speed",
+            "modes": [{
+              "value": "high"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "low"
+            },
+            {
+              "value": "auto"
+            }
+            ]
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "thermostat",
+            "modes": [{
+              "value": "fan_only"
+            },
+            {
+              "value": "heat"
+            },
+            {
+              "value": "cool"
+            },
+            {
+              "value": "dry"
+          },
+          {
+            "value": "auto"
+          }
+          ]
+        }
+        },
+        {
+        "type": "devices.capabilities.on_off",
+        "retrievable": true
+        }
+      ],
+      "properties": [{
+        "type": "devices.properties.float",
+        "retrievable": true,
+        "parameters": {
+        "instance": "temperature",
+        "unit": "unit.celsius"
+        }
+      }]
+      }
     });
 
     // Отправляем ответ
