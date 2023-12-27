@@ -212,124 +212,124 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 
 // Информация об устройствах пользователя
-app.get('/v1.0/user/info', async (req, res) => {
+app.get('/v1.0/user/devices', async (req, res) => {
   console.log('ЗАГОЛОВКИ ОТ ЯНДЕКСА', req.headers);
 
- res.send(
-  {
-    "status": "ok",
-    "request_id": String,
-    "rooms": [{
-            "id": String,
-            "name": String,
-            "household_id": String,
-            "devices": [String]
-        },
-        {
-            "id": String,
-            "name": String,
-            "household_id": String,
-            "devices": [String]
-        }
-    ],
-    "groups": [{
-        "id": String,
-        "name": String,
-        "aliases": [String],
-        "household_id": String,
-        "type": "devices.types.{type}",
-        "devices": [String],
+  try {
+    // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
+    const userJwtYandex = req.headers['authorization'];
+    const requestId = req.headers['x-request-id'];
+    console.log('requestId', requestId);
+    // Делаем запрос на ваш внутренний API для получения списка устройств
+    const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
+      "userId": String(userId),
+      "status": '1'
+    }, {
+      headers: {
+        'Authorization': `Bearer ${userJwt}`
+      }
+    });
+
+    console.log('responseUserDevices', responseUserDevices);
+
+    // Форматируем ответ согласно требованиям Яндекса
+    const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
+      return {
         "capabilities": [{
-                "retrievable": Boolean,
-                "type": "devices.capabilities.{capability}",
-                "parameters": {},
-                "state": {}
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "random_access": true,
+            "range": {
+            "max": 33,
+            "min": 18,
+            "precision": 1
+            },
+            "unit": "unit.temperature.celsius"
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "fan_speed",
+            "modes": [{
+              "value": "high"
             },
             {
-                "retrievable": Boolean,
-                "type": "devices.capabilities.{capability}",
-                "parameters": {},
-                "state": {}
+              "value": "medium"
+            },
+            {
+              "value": "low"
+            },
+            {
+              "value": "auto"
             }
-        ]
-    }],
-    "devices": [{
-            "id": String,
-            "name": String,
-            "aliases": [String],
-            "type": "devices.types.{type}",
-            "external_id": String,
-            "skill_id": String,
-            "household_id": String,
-            "room": String,
-            "groups": [String],
-            "capabilities": [{
-                    "reportable": Boolean,
-                    "retrievable": Boolean,
-                    "type": "devices.capabilities.{capability}",
-                    "parameters": {},
-                    "state": {},
-                    "last_updated": Float
-                },
-                {
-                    "reportable": Boolean,
-                    "retrievable": Boolean,
-                    "type": "devices.capabilities.{capability}",
-                    "parameters": {},
-                    "state": {},
-                    "last_updated": Float
-                }
-            ],
-            "properties": []
+            ]
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "thermostat",
+            "modes": [{
+              "value": "fan_only"
+            },
+            {
+              "value": "heat"
+            },
+            {
+              "value": "cool"
+            },
+            {
+              "value": "dry"
+          },
+          {
+            "value": "auto"
+          }
+          ]
+        }
         },
         {
-            "id": String,
-            "name": String,
-            "aliases": [String],
-            "type": "devices.types.{type}",
-            "external_id": String,
-            "skill_id": String,
-            "household_id": String,
-            "room": String,
-            "groups": [String],
-            "capabilities": [{
-                    "reportable": Boolean,
-                    "retrievable": Boolean,
-                    "type": "devices.capabilities.{capability}",
-                    "parameters": {},
-                    "state": {},
-                    "last_updated": Float
-                },
-                {
-                    "reportable": Boolean,
-                    "retrievable": Boolean,
-                    "type": "devices.capabilities.{capability}",
-                    "parameters": {},
-                    "state": {},
-                    "last_updated": Float
-                }
-            ],
-            "properties": []
+        "type": "devices.capabilities.on_off",
+        "retrievable": true
         }
-    ],
-    "scenarios": [{
-            "id": String,
-            "name": String,
-            "is_active": Boolean
-        },
-        {
-            "id": String,
-            "name": String,
-            "is_active": Boolean
+      ],
+      "properties": [{
+        "type": "devices.properties.float",
+        "retrievable": true,
+        "parameters": {
+        "instance": "temperature",
+        "unit": "unit.celsius"
         }
-    ],
-    "households": [{
-        "id": String,
-        "name": String
-    }]
-}
+      }]
+      }
+    });
 
- )
+    console.log('formattedDevices', formattedDevices);
+
+    // Отправляем ответ
+    res.json({
+      request_id: requestId,
+      payload: {
+        user_id: userId, // userID должен быть получен из вашей системы аутентификации
+        devices: formattedDevices
+      }
+    });
+
+  } catch (error) {
+    // Логируем ошибку для дальнейшего анализа
+    console.error('Error fetching devices:', error);
+
+    // Отправляем ошибку в ответе
+    res.status(500).json({
+      request_id: req.headers['x-request-id'], // Возвращаем тот же request_id что и получили
+      error_code: "INTERNAL_ERROR",
+      error_message: "Internal server error"
+    });
+  }
 });
 
 
