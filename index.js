@@ -172,43 +172,6 @@ app.post('/v1.0/refresh_token', async (req, res) => {
 });
 
 
-// Сохраняем рефреш токен в базу
-async function saveRefreshTokenToDatabase(userId, refreshToken) {
-  try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
-      userId: Number(userId),
-      tokenYandex: refreshToken
-    });
-
-    if (response.status !== 200) {
-      throw new Error('Failed to save refresh token');
-    }
-
-    console.log('Refresh token saved successfully');
-  } catch (error) {
-    console.error('Error saving refresh token:', error);
-    throw error;
-  }
-}
-
-// Проверяем рефреш токен в базе
-async function checkRefreshTokenInDatabase(userId, refreshToken) {
-  try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
-      userId: Number(userId),
-      tokenYandex: refreshToken
-    });
-
-    if (response.data && response.data.valid) {
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error('Error checking refresh token:', error);
-    return false; // В случае ошибки считаем токен недействительным
-  }
-}
 
 
 // Информация об устройствах пользователя
@@ -335,6 +298,46 @@ app.post('/v1.0/user/devices/action', async (req, res) => {
     res.status(500).send({ error: 'Error performing action on device' });
   }
 });
+
+
+// Сохраняем рефреш токен в базу
+async function saveRefreshTokenToDatabase(userId, refreshToken) {
+  try {
+    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
+      userId: Number(userId),
+      tokenYandex: refreshToken
+    });
+
+    if (response.status !== 200) {
+      throw new Error('Failed to save refresh token');
+    }
+
+    console.log('Refresh token saved successfully');
+  } catch (error) {
+    console.error('Error saving refresh token:', error);
+    throw error;
+  }
+}
+
+// Проверяем рефреш токен в базе
+async function checkRefreshTokenInDatabase(userId, refreshToken) {
+  try {
+    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
+      userId: Number(userId),
+      tokenYandex: refreshToken
+    });
+
+    if (response.data && response.data.valid) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error('Error checking refresh token:', error);
+    return false; // В случае ошибки считаем токен недействительным
+  }
+}
+
 
 
 app.listen(port, () => {
