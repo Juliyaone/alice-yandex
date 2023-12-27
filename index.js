@@ -219,8 +219,8 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
     const userJwtYandex = req.headers['authorization'];
     const requestId = req.headers['x-request-id'];
-    const userID = req.headers['userID'];
-    console.log('requestId', requestId);
+    // const userID = req.headers['userID'];
+    
     // Делаем запрос на ваш внутренний API для получения списка устройств
     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
       "userId": String(userId),
@@ -233,185 +233,67 @@ app.get('/v1.0/user/devices', async (req, res) => {
 
     console.log('responseUserDevices', responseUserDevices);
 
-    // Форматируем ответ согласно требованиям Яндекса
-    const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
-      return {
-
-        "request_id": String(requestId),
-        "payload": {
-            "user_id": String(userID),
-            "devices": [
-              {
-                "id": String(15),
-                "name": "Название устройства",
-                "description": "ОПИСАНИЕ",
-                "type": "thermostat.ac",
-                "capabilities": [{
-                  "type": "devices.capabilities.range",
-                  "retrievable": true,
-                  "parameters": {
-                    "instance": "temperature",
-                    "random_access": true,
-                    "range": {
-                    "max": 33,
-                    "min": 18,
-                    "precision": 1
-                    },
-                    "unit": "unit.temperature.celsius"
-                  }
-                },
-                {
-                  "type": "devices.capabilities.mode",
-                  "retrievable": true,
-                  "parameters": {
-                    "instance": "fan_speed",
-                    "modes": [{
-                      "value": "high"
-                    },
-                    {
-                      "value": "medium"
-                    },
-                    {
-                      "value": "low"
-                    },
-                    {
-                      "value": "auto"
-                    }
-                    ]
-                  }
-                  },
-                  {
-                    "type": "devices.capabilities.mode",
-                    "retrievable": true,
-                    "parameters": {
-                      "instance": "thermostat",
-                      "modes": [{
-                        "value": "fan_only"
-                      },
-                      {
-                        "value": "heat"
-                      },
-                      {
-                        "value": "cool"
-                      },
-                      {
-                        "value": "dry"
-                      },
-                      {
-                        "value": "auto"
-                      }
-                      ]
-                    }
-                  },
-                  {
-                  "type": "devices.capabilities.on_off",
-                  "retrievable": true
-                  }
-                ],
-                "device_info": {
-                  "manufacturer": 'manufacturer',
-                  "model": 'model',
-                  "hw_version": 'hw_version',
-                  "sw_version": 'sw_version'
-                }
-              },
-            ]
-        }
-      }
-    });
-
-    console.log('formattedDevices', formattedDevices);
-
     // Отправляем ответ
     res.json({
-      request_id: requestId,
-      payload: {
-        user_id: userId, // userID должен быть получен из вашей системы аутентификации
-        devices: {
-
-        "request_id": String(requestId),
-        "payload": {
-            "user_id": String(userID),
-            "devices": [
-              {
-                "id": String(15),
-                "name": "Название устройства",
-                "description": "ОПИСАНИЕ",
-                "type": "thermostat.ac",
-                "capabilities": [{
-                  "type": "devices.capabilities.range",
-                  "retrievable": true,
-                  "parameters": {
-                    "instance": "temperature",
-                    "random_access": true,
-                    "range": {
-                    "max": 33,
-                    "min": 18,
-                    "precision": 1
-                    },
-                    "unit": "unit.temperature.celsius"
+    "request_id":  String(`${requestId}`),
+    "payload": {
+        "user_id": String(`${userId}`),
+        "devices": [{
+                "id": "abc-123",
+                "name": "лампa",
+                "description": "цветная лампа",
+                "room": "спальня",
+                "type": "devices.types.light",
+                "custom_data": {
+                  "foo": 1,
+                  "bar": "two",
+                  "baz": false,
+                  "qux": [1, "two", false],
+                  "quux": {
+                    "quuz": {
+                      "corge": []
+                    }
                   }
                 },
-                {
-                  "type": "devices.capabilities.mode",
-                  "retrievable": true,
-                  "parameters": {
-                    "instance": "fan_speed",
-                    "modes": [{
-                      "value": "high"
+                "capabilities": [{
+                        "type": "devices.capabilities.range",
+                        "retrievable": true,
+                        "parameters": {
+                            "instance": "brightness",
+                            "unit": "unit.percent",
+                            "range": {
+                                "min": 0,
+                                "max": 100,
+                                "precision": 10
+                            }
+                        }
                     },
                     {
-                      "value": "medium"
+                        "type": "devices.capabilities.on_off"
                     },
                     {
-                      "value": "low"
-                    },
-                    {
-                      "value": "auto"
+                        "type": "devices.capabilities.color_setting",
+                        "parameters": {
+                            "color_model": "hsv",
+                            "temperature_k": {
+                                "min": 2700,
+                                "max": 9000,
+                                "precision": 1
+                            }
+                        }
                     }
-                    ]
-                  }
-                  },
-                  {
-                    "type": "devices.capabilities.mode",
-                    "retrievable": true,
-                    "parameters": {
-                      "instance": "thermostat",
-                      "modes": [{
-                        "value": "fan_only"
-                      },
-                      {
-                        "value": "heat"
-                      },
-                      {
-                        "value": "cool"
-                      },
-                      {
-                        "value": "dry"
-                      },
-                      {
-                        "value": "auto"
-                      }
-                      ]
-                    }
-                  },
-                  {
-                  "type": "devices.capabilities.on_off",
-                  "retrievable": true
-                  }
                 ],
                 "device_info": {
-                  "manufacturer": 'manufacturer',
-                  "model": 'model',
-                  "hw_version": 'hw_version',
-                  "sw_version": 'sw_version'
+                    "manufacturer": "Provider2",
+                    "model": "hue g11",
+                    "hw_version": "1.2",
+                    "sw_version": "5.4"
                 }
-              },
-            ]
-        }
-      }
-      }
-    });
+            }
+          
+        ]
+    }
+});
 
   } catch (error) {
     // Логируем ошибку для дальнейшего анализа
