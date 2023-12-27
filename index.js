@@ -213,7 +213,7 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 // Информация об устройствах пользователя
 app.get('/v1.0/user/devices', async (req, res) => {
-  console.log('req', req.headers);
+  console.log('ЗАГОЛОВКИ ОТ ЯНДЕКСА', req.headers);
 
   try {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
