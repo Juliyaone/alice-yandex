@@ -212,7 +212,7 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 
 // Информация об устройствах пользователя
-app.get('v1.0/user/devices', async (req, res) => {
+app.get('v/1.0/user/devices', async (req, res) => {
   try {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
     const userJwtYandex = req.headers['authorization'];
@@ -333,7 +333,9 @@ app.get('v1.0/user/devices', async (req, res) => {
 
 
 // POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
-app.post('v1.0/user/devices/query', async (req, res) => {
+app.post('/v1.0/user/devices/query', async (req, res) => {
+
+  console.log('req.query', req.query);
   try {
     // Здесь должна быть ваша логика для получения состояний устройств
     const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
