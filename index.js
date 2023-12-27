@@ -219,6 +219,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
     const userJwtYandex = req.headers['authorization'];
     const requestId = req.headers['x-request-id'];
+    const userID = req.headers['userID'];
     console.log('requestId', requestId);
     // Делаем запрос на ваш внутренний API для получения списка устройств
     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
@@ -235,76 +236,101 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Форматируем ответ согласно требованиям Яндекса
     const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
       return {
-        "capabilities": [{
-          "type": "devices.capabilities.range",
-          "retrievable": true,
-          "parameters": {
-            "instance": "temperature",
-            "random_access": true,
-            "range": {
-            "max": 33,
-            "min": 18,
-            "precision": 1
-            },
-            "unit": "unit.temperature.celsius"
-          }
-          },
-          {
-          "type": "devices.capabilities.mode",
-          "retrievable": true,
-          "parameters": {
-            "instance": "fan_speed",
-            "modes": [{
-              "value": "high"
-            },
-            {
-              "value": "medium"
-            },
-            {
-              "value": "low"
-            },
-            {
-              "value": "auto"
-            }
+
+        "request_id": String(requestId),
+        "payload": {
+            "user_id": String(userID),
+            "devices": [
+              {
+                "id": String(15),
+                "name": 'Название устройства',
+                "description": 'ОПИСАНИЕ',
+                "room": String,
+                "type": "thermostat.ac",
+                // "custom_data": Object,
+                "capabilities": [{
+                  "type": "devices.capabilities.range",
+                  "retrievable": true,
+                  "parameters": {
+                    "instance": "temperature",
+                    "random_access": true,
+                    "range": {
+                    "max": 33,
+                    "min": 18,
+                    "precision": 1
+                    },
+                    "unit": "unit.temperature.celsius"
+                  }
+                },
+                {
+                  "type": "devices.capabilities.mode",
+                  "retrievable": true,
+                  "parameters": {
+                    "instance": "fan_speed",
+                    "modes": [{
+                      "value": "high"
+                    },
+                    {
+                      "value": "medium"
+                    },
+                    {
+                      "value": "low"
+                    },
+                    {
+                      "value": "auto"
+                    }
+                    ]
+                  }
+                  },
+                  {
+                    "type": "devices.capabilities.mode",
+                    "retrievable": true,
+                    "parameters": {
+                      "instance": "thermostat",
+                      "modes": [{
+                        "value": "fan_only"
+                      },
+                      {
+                        "value": "heat"
+                      },
+                      {
+                        "value": "cool"
+                      },
+                      {
+                        "value": "dry"
+                      },
+                      {
+                        "value": "auto"
+                      }
+                      ]
+                    }
+                  },
+                  {
+                  "type": "devices.capabilities.on_off",
+                  "retrievable": true
+                  }
+                ],
+                "properties": [{
+                  "type": "devices.properties.float",
+                  "retrievable": true,
+                  "parameters": {
+                  "instance": "temperature",
+                  "unit": "unit.celsius"
+                  }
+                }],
+                // "properties": [
+                //   "<property1>": {"property1": "property1"},
+                //   "<property2>": {"property1": "property1"},
+                // ],
+                "device_info": {
+                  "manufacturer": 'manufacturer',
+                  "model": 'model',
+                  "hw_version": 'hw_version',
+                  "sw_version": 'sw_version'
+                }
+              },
             ]
-          }
-          },
-          {
-          "type": "devices.capabilities.mode",
-          "retrievable": true,
-          "parameters": {
-            "instance": "thermostat",
-            "modes": [{
-              "value": "fan_only"
-            },
-            {
-              "value": "heat"
-            },
-            {
-              "value": "cool"
-            },
-            {
-              "value": "dry"
-          },
-          {
-            "value": "auto"
-          }
-          ]
         }
-        },
-        {
-        "type": "devices.capabilities.on_off",
-        "retrievable": true
-        }
-      ],
-      "properties": [{
-        "type": "devices.properties.float",
-        "retrievable": true,
-        "parameters": {
-        "instance": "temperature",
-        "unit": "unit.celsius"
-        }
-      }]
       }
     });
 
