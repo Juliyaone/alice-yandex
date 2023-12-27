@@ -212,7 +212,7 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 
 // Информация об устройствах пользователя
-app.get('/v1.0/user/devices', async (req, res) => {
+app.get('/v1.0/user/info', async (req, res) => {
   console.log('ЗАГОЛОВКИ ОТ ЯНДЕКСА', req.headers);
 
   try {
