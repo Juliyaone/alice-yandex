@@ -313,6 +313,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
       }
     });
 
+    console.log('responseUserDevices', responseUserDevices);
 //     {
 //     "0": {
 //         "id_user": "23"
