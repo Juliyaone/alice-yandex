@@ -348,7 +348,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
 // POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
 app.post('/v1.0/user/devices/query', async (req, res) => {
 
-  console.log('req.query', req.body);
+  console.log('req.body', req.body);
   try {
     // Здесь должна быть ваша логика для получения состояний устройств
     const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
@@ -360,82 +360,17 @@ app.post('/v1.0/user/devices/query', async (req, res) => {
 });
 
 // POST /v1.0/user/devices/action Изменение состояния у устройств
-// app.post('/v1.0/user/devices/action', async (req, res) => {
-//   try {
-//     // Здесь должна быть ваша логика для изменения состояния устройства
-//     console.log('Device action requested', req.body);
-//     // Выполните действие на основе тела запроса req.body
-//     res.status(200).send({ message: 'Device action executed successfully' });
-//   } catch (error) {
-//     console.error('Error performing action on device:', error);
-//     res.status(500).send({ error: 'Error performing action on device' });
-//   }
-// });
-
-// const capabilities = [];
-
-// // Пример добавления умения on_off
-// capabilities.push({
-//     "type": "devices.capabilities.on_off",
-//     "retrievable": true,
-//     "reportable": true,
-//     "parameters": {
-//         // здесь могут быть дополнительные параметры, если они требуются
-//     }
-// });
-
-// // Пример добавления умения mode
-// capabilities.push({
-//     "type": "devices.capabilities.mode",
-//     "retrievable": true,
-//     "reportable": true,
-//     "parameters": {
-//         // Параметры для режима работы, например, для кондиционера
-//     }
-// });
-
-// // Пример добавления умения range
-// capabilities.push({
-//     "type": "devices.capabilities.range",
-//     "retrievable": true,
-//     "reportable": true,
-//     "parameters": {
-//         "instance": "brightness",
-//         "unit": "unit.percent",
-//         "range": {
-//             "min": 0,
-//             "max": 100,
-//             "precision": 1
-//         }
-//     }
-// });
-
-// // Пример добавления умения toggle
-// capabilities.push({
-//     "type": "devices.capabilities.toggle",
-//     "retrievable": true,
-//     "reportable": true,
-//     "parameters": {
-//         // Параметры для переключателя, если они требуются
-//     }
-// });
-
-
-// Конечно, вы должны заполнить массив capabilities данными, полученными от вашего API.
-// Например, если у вас есть объект device, который содержит информацию о возможностях устройства, вы можете преобразовать его следующим образом:
-// const deviceCapabilities = device.capabilities.map(capability => {
-//     return {
-//         "type": capability.type,
-//         "retrievable": capability.retrievable,
-//         "reportable": capability.reportable,
-//         "parameters": capability.parameters
-//     };
-// });
-
-
-
-
-
+app.post('/v1.0/user/devices/action', async (req, res) => {
+  try {
+    // Здесь должна быть ваша логика для изменения состояния устройства
+    console.log('Device action requested', req.body);
+    // Выполните действие на основе тела запроса req.body
+    res.status(200).send({ message: 'Device action executed successfully' });
+  } catch (error) {
+    console.error('Error performing action on device:', error);
+    res.status(500).send({ error: 'Error performing action on device' });
+  }
+});
 
 
 app.listen(port, () => {
