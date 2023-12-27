@@ -243,11 +243,9 @@ app.get('/v1.0/user/devices', async (req, res) => {
             "devices": [
               {
                 "id": String(15),
-                "name": 'Название устройства',
-                "description": 'ОПИСАНИЕ',
-                "room": String,
+                "name": "Название устройства",
+                "description": "ОПИСАНИЕ",
                 "type": "thermostat.ac",
-                // "custom_data": Object,
                 "capabilities": [{
                   "type": "devices.capabilities.range",
                   "retrievable": true,
@@ -310,18 +308,6 @@ app.get('/v1.0/user/devices', async (req, res) => {
                   "retrievable": true
                   }
                 ],
-                "properties": [{
-                  "type": "devices.properties.float",
-                  "retrievable": true,
-                  "parameters": {
-                  "instance": "temperature",
-                  "unit": "unit.celsius"
-                  }
-                }],
-                // "properties": [
-                //   "<property1>": {"property1": "property1"},
-                //   "<property2>": {"property1": "property1"},
-                // ],
                 "device_info": {
                   "manufacturer": 'manufacturer',
                   "model": 'model',
