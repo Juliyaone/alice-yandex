@@ -302,7 +302,7 @@ app.get('/v1.0/user/devices', async (req, res) => {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
     const userJwtYandex = req.headers['authorization'];
     const requestId = req.headers['x-request-id'];
-
+console.log('requestId', requestId);
     // Делаем запрос на ваш внутренний API для получения списка устройств
     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
       "userId": String(userId),
