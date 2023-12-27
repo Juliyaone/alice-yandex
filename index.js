@@ -213,66 +213,139 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 
 // Информация об устройствах пользователя
 app.get('/v1.0/user/devices', async (req, res) => {
-  console.log('Received request for /v1.0/user/devices with query:', req.query);
+  console.log('req', req.headers);
 
   try {
+    // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
     const userJwtYandex = req.headers['authorization'];
     const requestId = req.headers['x-request-id'];
-
-    if (!userJwtYandex) {
-      throw new Error('Authorization header is missing');
-    }
-
-    console.log('Request ID:', requestId);
-
+    console.log('requestId', requestId);
+    // Делаем запрос на ваш внутренний API для получения списка устройств
     const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
-      userId: String(userId),
-      status: '1'
+      "userId": String(userId),
+      "status": '1'
     }, {
-      headers: { 'Authorization': `Bearer ${userJwt}` }
+      headers: {
+        'Authorization': `Bearer ${userJwt}`
+      }
     });
 
-    console.log('Received devices from internal API:', responseUserDevices.data);
+    console.log('responseUserDevices', responseUserDevices);
 
+    // Форматируем ответ согласно требованиям Яндекса
     const formattedDevices = responseUserDevices.data["vent-units"].map(device => {
-      // Map and format your devices here
+      return {
+        "capabilities": [{
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "random_access": true,
+            "range": {
+            "max": 33,
+            "min": 18,
+            "precision": 1
+            },
+            "unit": "unit.temperature.celsius"
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "fan_speed",
+            "modes": [{
+              "value": "high"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "low"
+            },
+            {
+              "value": "auto"
+            }
+            ]
+          }
+          },
+          {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "thermostat",
+            "modes": [{
+              "value": "fan_only"
+            },
+            {
+              "value": "heat"
+            },
+            {
+              "value": "cool"
+            },
+            {
+              "value": "dry"
+          },
+          {
+            "value": "auto"
+          }
+          ]
+        }
+        },
+        {
+        "type": "devices.capabilities.on_off",
+        "retrievable": true
+        }
+      ],
+      "properties": [{
+        "type": "devices.properties.float",
+        "retrievable": true,
+        "parameters": {
+        "instance": "temperature",
+        "unit": "unit.celsius"
+        }
+      }]
+      }
     });
 
-    console.log('Formatted devices:', formattedDevices);
+    console.log('formattedDevices', formattedDevices);
 
+    // Отправляем ответ
     res.json({
       request_id: requestId,
       payload: {
-        user_id: userId,
+        user_id: userId, // userID должен быть получен из вашей системы аутентификации
         devices: formattedDevices
       }
     });
-  } catch (error) {
-    console.error('Error in /v1.0/user/devices:', error.message, error.stack);
 
+  } catch (error) {
+    // Логируем ошибку для дальнейшего анализа
+    console.error('Error fetching devices:', error);
+
+    // Отправляем ошибку в ответе
     res.status(500).json({
-      request_id: req.headers['x-request-id'] || 'unknown',
+      request_id: req.headers['x-request-id'], // Возвращаем тот же request_id что и получили
       error_code: "INTERNAL_ERROR",
-      error_message: error.message || "Unknown error"
+      error_message: "Internal server error"
     });
   }
 });
 
 
+// POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
+app.post('/v1.0/user/devices/query', async (req, res) => {
 
-// // POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
-// app.post('/v1.0/user/devices/query', async (req, res) => {
-
-//   console.log('req.query', req.body);
-//   try {
-//     // Здесь должна быть ваша логика для получения состояний устройств
-//     const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
-//     res.status(200).send(devicesStatus);
-//   } catch (error) {
-//     console.error('Error querying device statuses:', error);
-//     res.status(500).send({ error: 'Error querying device statuses' });
-//   }
-// });
+  console.log('req.query', req.body);
+  try {
+    // Здесь должна быть ваша логика для получения состояний устройств
+    const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
+    res.status(200).send(devicesStatus);
+  } catch (error) {
+    console.error('Error querying device statuses:', error);
+    res.status(500).send({ error: 'Error querying device statuses' });
+  }
+});
 
 // POST /v1.0/user/devices/action Изменение состояния у устройств
 // app.post('/v1.0/user/devices/action', async (req, res) => {
