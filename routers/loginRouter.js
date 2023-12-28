@@ -1,13 +1,13 @@
-require('dotenv').config();
-const express = require('express');
+require("dotenv").config();
+const express = require("express");
 const app = express();
-const axios = require('axios');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const axios = require("axios");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 
 // Страница авторизации
-app.get('/v1.0/login', (req, res) => {
+app.get("/v1.0/login", (req, res) => {
   const { client_id, redirect_uri, state } = req.query;
   // Отображаем форму для ввода логина и пароля
   res.send(`

@@ -1,19 +1,19 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const axios = require('axios');
-const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
+const axios = require("axios");
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
-let userId = '';
-let userJwt = '';
+let userId = "";
+let userJwt = "";
 
-router.post('/v1.0/auth', async (req, res) => {
+router.post("/v1.0/auth", async (req, res) => {
 
   try {
     const { username, password, client_id, redirect_uri, state } = req.body;
 
     // Отправляем запрос на PHP-сервер для аутентификации
-    const response = await axios.post('https://smart.horynize.ru/api/users/auth', {
+    const response = await axios.post("https://smart.horynize.ru/api/users/auth", {
       username,
       password
     });
@@ -24,7 +24,7 @@ router.post('/v1.0/auth', async (req, res) => {
       userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
 
       // Успешная аутентификация, генерируем код авторизации
-      const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
+      const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
 
 
@@ -43,11 +43,11 @@ router.post('/v1.0/auth', async (req, res) => {
       const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&code=${authCode}`;
       res.redirect(redirectUrl);
     } else {
-      res.send('Ошибка аутентификации');
+      res.send("Ошибка аутентификации");
     }
   } catch (error) {
     console.log(error);
-    res.send('Произошла ошибка при аутентификации');
+    res.send("Произошла ошибка при аутентификации");
   }
 });
 

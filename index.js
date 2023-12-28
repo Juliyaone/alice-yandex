@@ -1,59 +1,59 @@
-const express = require('express');
+const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 
-const axios = require('axios');
-const crypto = require('crypto');
+const axios = require("axios");
+const crypto = require("crypto");
 // const morgan = require('morgan');
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
-require('dotenv').config();
+require("dotenv").config();
 
 
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
-const clientSecret = process.env.CLIENT_SECRET;
-const clientId = process.env.CLIENT_ID;
+// const clientSecret = process.env.CLIENT_SECRET;
+// const clientId = process.env.CLIENT_ID;
 
 // console.log('secretKeyForToken', secretKeyForToken);
 
 const authorizationCodes = {};
-let userId = '';
-let userJwt = '';
+let userId = "";
+let userJwt = "";
 
 
 // app.use(morgan('dev'));
 
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
   console.error(err.stack);
-  res.status(500).send('Something broke!');
+  res.status(500).send("Something broke!");
 });
 
-app.get('/', (req, res) => {
-  res.send('Hello World!');
+app.get("/", (req, res) => {
+  res.send("Hello World!");
 });
 
 // HEAD /v1.0/ Проверка доступности Endpoint URL провайдера
-app.head('/v1.0/', (req, res) => {
+app.head("/v1.0/", (req, res) => {
   res.status(200).send();
 });
 
 // POST /v1.0/user/unlink Оповещение о разъединении аккаунтов
-app.post('/v1.0/user/unlink', async (req, res) => {
+app.post("/v1.0/user/unlink", async (req, res) => {
   try {
     // Здесь должна быть ваша логика для обработки разъединения аккаунтов
-    console.log('User account unlinked');
-    res.status(200).send({ message: 'Account successfully unlinked' });
+    console.log("User account unlinked");
+    res.status(200).send({ message: "Account successfully unlinked" });
   } catch (error) {
-    console.error('Error unlinked account:', error);
-    res.status(500).send({ error: 'Error unlinked account' });
+    console.error("Error unlinked account:", error);
+    res.status(500).send({ error: "Error unlinked account" });
   }
 });
 
 
 
 // Страница авторизации
-app.get('/v1.0/login', (req, res) => {
+app.get("/v1.0/login", (req, res) => {
  
   const { client_id, redirect_uri, state } = req.query;
   // Отображаем форму для ввода логина и пароля
@@ -73,12 +73,12 @@ app.get('/v1.0/login', (req, res) => {
   `);
 });
 
-app.post('/v1.0/auth', async (req, res) => {
+app.post("/v1.0/auth", async (req, res) => {
   try {
     const { username, password, client_id, redirect_uri, state } = req.body;
 
     // Отправляем запрос на PHP-сервер для аутентификации
-    const response = await axios.post('https://smart.horynize.ru/api/users/auth', {
+    const response = await axios.post("https://smart.horynize.ru/api/users/auth", {
       username,
       password
     });
@@ -87,10 +87,10 @@ app.post('/v1.0/auth', async (req, res) => {
 
       userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
       userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
-      console.log('userId', userId);
-      console.log('userJwt', userJwt);
+      console.log("userId", userId);
+      console.log("userJwt", userJwt);
       // Успешная аутентификация, генерируем код авторизации
-      const authCode = crypto.randomBytes(16).toString('hex'); // Простая генерация кода
+      const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
 
 
@@ -109,16 +109,16 @@ app.post('/v1.0/auth', async (req, res) => {
       const redirectUrl = `${redirect_uri}?client_id=${client_id}&state=${state}&code=${authCode}`;
       res.redirect(redirectUrl);
     } else {
-      res.send('Ошибка аутентификации');
+      res.send("Ошибка аутентификации");
     }
   } catch (error) {
     console.log(error);
-    res.send('Произошла ошибка при аутентификации');
+    res.send("Произошла ошибка при аутентификации");
   }
 });
 
 // Эндпоинт для обмена кода авторизации на токены
-app.post('/v1.0/token', async (req, res) => {
+app.post("/v1.0/token", async (req, res) => {
   const { code, client_id } = req.body;
 
   const codeData = authorizationCodes[code];
@@ -127,27 +127,27 @@ app.post('/v1.0/token', async (req, res) => {
     const userId = codeData.userId; // Вытаскиваем userId из кода
 
     // Генерируем токены
-    const accessToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: '1h' });
-    const refreshToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: '7d' });
+    const accessToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: "1h" });
+    const refreshToken = jwt.sign({ userId: userId }, secretKeyForToken, { expiresIn: "7d" });
 
     // Сохраняем refresh token в базу данных
-      try {
-        await saveRefreshTokenToDatabase(userId, refreshToken);
-      } catch (innerError) {
-        console.error('Error saving refresh token:', innerError);
-        // Обработка ошибки сохранения refresh token
-      }
+    try {
+      await saveRefreshTokenToDatabase(userId, refreshToken);
+    } catch (innerError) {
+      console.error("Error saving refresh token:", innerError);
+      // Обработка ошибки сохранения refresh token
+    }
     res.json({
       access_token: accessToken,
       refresh_token: refreshToken,
       expires_in: 3600, // 1 час
     });
   } else {
-    res.status(400).json({ error: 'Invalid or expired authorization code' });
+    res.status(400).json({ error: "Invalid or expired authorization code" });
   }
 });
 
-app.post('/v1.0/refresh_token', async (req, res) => {
+app.post("/v1.0/refresh_token", async (req, res) => {
   const { refresh_token } = req.body;
   try {
     // Проверяем refresh_token
@@ -157,145 +157,114 @@ app.post('/v1.0/refresh_token', async (req, res) => {
 
     if (tokenIsValid) {
       // Генерируем новый access_token
-      const accessToken = jwt.sign({ userId: decoded.userId }, secretKeyForToken, { expiresIn: '1h' });
+      const accessToken = jwt.sign({ userId: decoded.userId }, secretKeyForToken, { expiresIn: "1h" });
 
       res.json({
         access_token: accessToken,
         expires_in: 3600, // 1 час
       });
     } else {
-      throw new Error('Invalid refresh token');
+      throw new Error("Invalid refresh token");
     }
   } catch (error) {
-    res.status(401).json({ error: 'Invalid or expired refresh token' });
+    res.status(401).json({ error: "Invalid or expired refresh token" });
   }
 });
 
-
-
-
 // Информация об устройствах пользователя
-app.get('/v1.0/user/devices', async (req, res) => {
-  console.log('ЗАГОЛОВКИ ОТ ЯНДЕКСА', req.headers);
+app.get("/v1.0/user/devices", async (req, res) => {
 
   try {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
-    const userJwtYandex = req.headers['authorization'];
-    const requestId = req.headers['x-request-id'];
+    // const userJwtYandex = req.headers["authorization"];
+    // const requestId = req.headers["x-request-id"];
     // const userID = req.headers['userID'];
     
     // Делаем запрос на ваш внутренний API для получения списка устройств
-    const responseUserDevices = await axios.post('https://smart.horynize.ru/api/vent-units/all', {
+    const responseUserDevices = await axios.post("https://smart.horynize.ru/api/vent-units/all", {
       "userId": String(userId),
-      "status": '1'
+      "status": "1"
     }, {
       headers: {
-        'Authorization': `Bearer ${userJwt}`
+        "Authorization": `Bearer ${userJwt}`
       }
     });
 
-    console.log('responseUserDevices', responseUserDevices);
+    console.log("responseUserDevices", responseUserDevices);
 
     // Отправляем ответ
-    res.json({
-    "request_id":  String(`${requestId}`),
-    "payload": {
-        "user_id": String(`${userId}`),
-        "devices": [{
-                "id": "abc-123",
-                "name": "лампa",
-                "description": "цветная лампа",
-                "room": "спальня",
-                "type": "devices.types.light",
-                "custom_data": {
-                  "foo": 1,
-                  "bar": "two",
-                  "baz": false,
-                  "qux": [1, "two", false],
-                  "quux": {
-                    "quuz": {
-                      "corge": []
-                    }
-                  }
-                },
-                "capabilities": [{
-                        "type": "devices.capabilities.range",
-                        "retrievable": true,
-                        "parameters": {
-                            "instance": "brightness",
-                            "unit": "unit.percent",
-                            "range": {
-                                "min": 0,
-                                "max": 100,
-                                "precision": 10
-                            }
-                        }
-                    },
-                    {
-                        "type": "devices.capabilities.on_off"
-                    },
-                    {
-                        "type": "devices.capabilities.color_setting",
-                        "parameters": {
-                            "color_model": "hsv",
-                            "temperature_k": {
-                                "min": 2700,
-                                "max": 9000,
-                                "precision": 1
-                            }
-                        }
-                    }
-                ],
-                "device_info": {
-                    "manufacturer": "Provider2",
-                    "model": "hue g11",
-                    "hw_version": "1.2",
-                    "sw_version": "5.4"
-                }
-            }
-          
-        ]
-    }
-});
+    res.json(
+      {
+        "request_id": String,
+        "payload": {
+          "user_id": String,
+          "devices": [
+            {
+              "id": String,
+              "name": String,
+              "description": String,
+              "room": String,
+              "type": String,
+              "custom_data": Object,
+              // "capabilities": [
+              //   "<capability1>": Object,
+              //   "<capability2>": Object,
+              //   ...
+              // ],
+              // "properties": [
+              //   "<property1>": Object,
+              //   "<property2>": Object,
+              //   ...
+              // ],
+              "device_info": {
+                "manufacturer": String,
+                "model": String,
+                "hw_version": String,
+                "sw_version": String
+              }
+            },
+          ]
+        }
+      }
+    );
 
   } catch (error) {
     // Логируем ошибку для дальнейшего анализа
-    console.error('Error fetching devices:', error);
+    console.error("Error fetching devices:", error);
 
     // Отправляем ошибку в ответе
     res.status(500).json({
-      request_id: req.headers['x-request-id'], // Возвращаем тот же request_id что и получили
+      request_id: req.headers["x-request-id"], // Возвращаем тот же request_id что и получили
       error_code: "INTERNAL_ERROR",
       error_message: "Internal server error"
     });
   }
 });
 
+// Информация о состояниях устройств пользователя
+app.post("/v1.0/user/devices/query", async (req, res) => {
 
-// POST /v1.0/user/devices/query Информация о состояниях устройств пользователя
-app.post('/v1.0/user/devices/query', async (req, res) => {
-
-  console.log('req.body', req.body);
+  console.log("req.body", req.body);
   try {
     // Здесь должна быть ваша логика для получения состояний устройств
     const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
     res.status(200).send(devicesStatus);
   } catch (error) {
-    console.error('Error querying device statuses:', error);
-    res.status(500).send({ error: 'Error querying device statuses' });
+    console.error("Error querying device statuses:", error);
+    res.status(500).send({ error: "Error querying device statuses" });
   }
 });
 
-// POST /v1.0/user/devices/action Изменение состояния у устройств
-app.post('/v1.0/user/devices/action', async (req, res) => {
+// Изменение состояния у устройств
+app.post("/v1.0/user/devices/action", async (req, res) => {
   try {
     // Здесь должна быть ваша логика для изменения состояния устройства
-    console.log('Device action requested', req.body);
+    console.log("Device action requested", req.body);
     // Выполните действие на основе тела запроса req.body
-    res.status(200).send({ message: 'Device action executed successfully' });
+    res.status(200).send({ message: "Device action executed successfully" });
   } catch (error) {
-    console.error('Error performing action on device:', error);
-    res.status(500).send({ error: 'Error performing action on device' });
+    console.error("Error performing action on device:", error);
+    res.status(500).send({ error: "Error performing action on device" });
   }
 });
 
@@ -303,18 +272,18 @@ app.post('/v1.0/user/devices/action', async (req, res) => {
 // Сохраняем рефреш токен в базу
 async function saveRefreshTokenToDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/token_save.php', {
+    const response = await axios.post("https://smart.horynize.ru/api/users/token_save.php", {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
 
     if (response.status !== 200) {
-      throw new Error('Failed to save refresh token');
+      throw new Error("Failed to save refresh token");
     }
 
-    console.log('Refresh token saved successfully');
+    console.log("Refresh token saved successfully");
   } catch (error) {
-    console.error('Error saving refresh token:', error);
+    console.error("Error saving refresh token:", error);
     throw error;
   }
 }
@@ -322,7 +291,7 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenInDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post('https://smart.horynize.ru/api/users/check_refresh_token.php', {
+    const response = await axios.post("https://smart.horynize.ru/api/users/check_refresh_token.php", {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -333,7 +302,7 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
       return false;
     }
   } catch (error) {
-    console.error('Error checking refresh token:', error);
+    console.error("Error checking refresh token:", error);
     return false; // В случае ошибки считаем токен недействительным
   }
 }
