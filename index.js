@@ -24,6 +24,7 @@ let userJwt = "";
 
 // app.use(morgan('dev'));
 
+// eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send("Something broke!");
@@ -50,8 +51,6 @@ app.post("/v1.0/user/unlink", async (req, res) => {
     res.status(500).send({ error: "Error unlinked account" });
   }
 });
-
-
 
 // Страница авторизации
 app.get("/v1.0/login", (req, res) => {
@@ -177,8 +176,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
   try {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
-    // const userJwtYandex = req.headers["authorization"];
-    // const requestId = req.headers["x-request-id"];
+    const userJwtYandex = req.headers["authorization"];
+    const requestId = req.headers["x-request-id"];
     // const userID = req.headers['userID'];
     
     // Делаем запрос на ваш внутренний API для получения списка устройств
@@ -196,9 +195,9 @@ app.get("/v1.0/user/devices", async (req, res) => {
     // Отправляем ответ
     res.json(
       {
-        "request_id": String,
+        "request_id": requestId,
         "payload": {
-          "user_id": String,
+          "user_id": String(userId),
           "devices": [
             {
               "id": String,
