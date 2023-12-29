@@ -186,10 +186,9 @@ app.get("/v1.0/user/devices", async (req, res) => {
       "status": "1"
     }, {
       headers: {
-        "Authorization": `Bearer ${userJwt}`
+        "Authorization": `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJhdWQiOiJodHRwczovL2hvcnluaXplLmV1cm9kaXIucnUiLCJpYXQiOjE3MDM4MTI2MTksIm5iZiI6MTcwMzgxMjYxOSwiZXhwIjoxNzAzODIwNDE5LCJkYXRhIjp7ImlkX3VzZXIiOjIzLCJ1c2VybmFtZSI6IlZpY3RvcnVuaTEiLCJlbWFpbCI6InR1cmJvZWRhQGdtYWlsLmNvbSJ9fQ.hqfD4zkXzcyuFVK3y3L9akBJVv3z7RZkuCsDhyIf0Vk`
       }
     });
-
     console.log("responseUserDevices", responseUserDevices);
 
     // Отправляем ответ
