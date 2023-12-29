@@ -36,7 +36,7 @@ app.get("/", (req, res) => {
 });
 
 // HEAD /v1.0/ Проверка доступности Endpoint URL провайдера
-app.head("/v1.0/", (req, res) => {
+app.head("/v1.0", (req, res) => {
   res.status(200).send();
 });
 
