@@ -200,7 +200,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
           "user_id": "23",
           "devices": [
             {
-              "id": "11",
+              "id": "kagdfjijp4e65896748763qmfiouybnoivy",
               "name": "Установка имя",
               "description": "Установка описание",
               "room": "Установка комната",
