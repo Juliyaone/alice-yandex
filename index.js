@@ -37,7 +37,12 @@ app.get("/", (req, res) => {
 
 // HEAD /v1.0/ Проверка доступности Endpoint URL провайдера
 app.head("/v1.0", (req, res) => {
-  res.status(200).end();
+  try {
+    res.status(200).end();
+  } catch (error) {
+    console.error("Internal Server Error", error);
+    res.status(500).end();
+  }
 });
 
 // POST /v1.0/user/unlink Оповещение о разъединении аккаунтов
