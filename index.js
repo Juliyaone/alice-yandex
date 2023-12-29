@@ -37,7 +37,7 @@ app.get("/", (req, res) => {
 
 // HEAD /v1.0/ Проверка доступности Endpoint URL провайдера
 app.head("/v1.0", (req, res) => {
-  res.status(200).send();
+  res.status(200).end();
 });
 
 // POST /v1.0/user/unlink Оповещение о разъединении аккаунтов
