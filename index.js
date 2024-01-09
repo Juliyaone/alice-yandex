@@ -202,7 +202,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
       {
         "request_id": requestId,
         "payload": {
-          "user_id": "23",
+          "user_id": String(userId),
           "devices": [
             {
               "id": "kagdfjijp4e65896748763qmfiouybnoivy",
