@@ -398,7 +398,8 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 // Получаем параметры устройств
 async function getDevicesRequested() {
   const responseGetDevicesRequested = await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
-    "controllerId": userIdControllersArray[0]["id_controller"]
+    // "controllerId": userIdControllersArray[0]["id_controller"]
+    "controllerId": "20"
   }, {
     headers: {
       "Authorization": `Bearer ${userJwt}`
