@@ -199,7 +199,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
       }
     });
 
-    console.log("responseUserDevices", responseUserDevices);
+    // console.log("responseUserDevices", responseUserDevices);
 
     // Отправляем ответ
     res.json(
@@ -348,7 +348,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 app.post("/v1.0/user/devices/action", async (req, res) => {
   try {
     // Здесь должна быть ваша логика для изменения состояния устройства
-    console.log("Device action requested", req.body);
+    // console.log("Device action requested", req.body);
     // Выполните действие на основе тела запроса req.body
     res.status(200).send({ message: "Device action executed successfully" });
   } catch (error) {
