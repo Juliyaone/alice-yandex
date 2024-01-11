@@ -5,7 +5,6 @@ app.use(express.urlencoded({ extended: true }));
 
 const axios = require("axios");
 const crypto = require("crypto");
-// const morgan = require('morgan');
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
@@ -20,9 +19,11 @@ const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 const authorizationCodes = {};
 let userId = "";
 let userJwt = "";
+let userIdControllersArray = [];
+
+console.log(("userIdControllersArray", userIdControllersArray));
 
 
-// app.use(morgan('dev'));
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
@@ -92,8 +93,11 @@ app.post("/v1.0/auth", async (req, res) => {
 
       userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
       userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
+      userIdControllersArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
+      
       console.log("userId", userId);
       console.log("userJwt", userJwt);
+      console.log("userIdControllersArray", userIdControllersArray);
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
@@ -218,8 +222,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
                   "instance": "temperature",
                   "random_access": true,
                   "range": {
-                    "max": 33,
-                    "min": 18,
+                    "max": 30,
+                    "min": 15,
                     "precision": 1
                   },
                   "unit": "unit.temperature.celsius"
@@ -306,12 +310,34 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
 // Информация о состояниях устройств пользователя
 app.post("/v1.0/user/devices/query", async (req, res) => {
+  const userJwtYandex = req.headers.authorization;
+  const requestId = req.headers["x-request-id"];
+  const ContentType = req.headers["Content-Type"];
 
   console.log("req.body", req.body);
+
   try {
+    const devicesRequested = req.body.devices; // Извлекаем массив устройств из тела запроса
+    console.log("devicesRequested", devicesRequested);
+    
     // Здесь должна быть ваша логика для получения состояний устройств
-    const devicesStatus = {}; // Замените это объектом с состоянием ваших устройств
-    res.status(200).send(devicesStatus);
+    const devicesStatus = await getDevicesRequested();
+
+    // Предполагаем, что функция getDevicesStatus возвращает информацию об устройствах
+    // const devicesParamsArray = devicesRequested.map(device => {
+    //   return {
+    //     id: device.id,
+    //     // ... Добавьте информацию о состоянии, умениях и свойствах устройства
+    //   };
+    // });
+
+    // Формирование ответа
+    res.json({
+      request_id: requestId, // Возвращаем идентификатор запроса
+      payload: {
+        devices: devicesStatus
+      }
+    });
   } catch (error) {
     console.error("Error querying device statuses:", error);
     res.status(500).send({ error: "Error querying device statuses" });
@@ -368,6 +394,22 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
     console.error("Error checking refresh token:", error);
     return false; // В случае ошибки считаем токен недействительным
   }
+}
+// Получаем параметры устройств
+async function getDevicesRequested() {
+  const responseGetDevicesRequested = await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
+    "controllerId": userIdControllersArray[0]["id_controller"]
+  }, {
+    headers: {
+      "Authorization": `Bearer ${userJwt}`
+    }
+  });
+
+
+  console.log("responseGetDevicesRequested", responseGetDevicesRequested);
+
+  // {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
+  
 }
 
 
