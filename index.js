@@ -13,15 +13,15 @@ require("dotenv").config();
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 // const clientSecret = process.env.CLIENT_SECRET;
 // const clientId = process.env.CLIENT_ID;
-
 // console.log('secretKeyForToken', secretKeyForToken);
 
 const authorizationCodes = {};
 let userId = "";
 let userJwt = "";
-let userIdControllersArray = [];
+let controllersArray = [];
+let controllersArrayYandex = [];
 
-console.log(("userIdControllersArray", userIdControllersArray));
+console.log(("controllersArray", controllersArray));
 
 app.use(express.json());
 
@@ -93,7 +93,7 @@ app.post("/v1.0/auth", async (req, res) => {
 
       userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
       userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
-      userIdControllersArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
+      controllersArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
       
       console.log("userId", userId);
       console.log("userJwt", userJwt);
@@ -316,10 +316,16 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
   console.log("req.body", req.body);
 
+  // 2024-01-12T01:30:21.042 app[6e8242e5c55958] ams [info] req.body { devices: [ { id: 'kagdfjijp4e65896748763qmfiouybnoivy' } ] }
+
+
+
   try {
-    const devicesRequested = req.body.devices; // Извлекаем массив устройств из тела запроса
-    console.log("devicesRequested", devicesRequested);
-    
+    controllersArrayYandex = req.body.devices; // Извлекаем массив устройств из тела запроса
+
+    console.log("userIdControllersArrayYandex", controllersArrayYandex);
+    // ожидаем => devicesRequested [ { id: 'kagdfjijp4e65896748763qmfiouybnoivy' } ]
+
     // Здесь должна быть ваша логика для получения состояний устройств
     const devicesStatus = await getDevicesRequested();
     console.log("devicesStatus", devicesStatus);
@@ -398,7 +404,6 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
 // Получаем параметры устройств
 async function getDevicesRequested() {
   const responseGetDevicesRequested = await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
-    // "controllerId": userIdControllersArray[0]["id_controller"]
     "controllerId": "20"
   }, {
     headers: {
@@ -407,7 +412,7 @@ async function getDevicesRequested() {
   });
 
 
-  // console.log("responseGetDevicesRequested", responseGetDevicesRequested);
+  console.log("responseGetDevicesRequested", responseGetDevicesRequested);
 
   // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
   
