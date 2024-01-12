@@ -330,6 +330,10 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     console.log("devicesStatus", devicesStatus);
 
     // Формирование ответа
+
+
+  // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
+
     const responsePayload = devicesStatus["data"].map(deviceData => ({
       "id": controllersArrayYandex[0].id, // Используйте правильный ID устройства
       "capabilities": [
@@ -345,7 +349,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
           "type": "devices.capabilities.range",
           "state": {
             "instance": "temperature",
-            "value": deviceData["tempChannel"]
+            "value":  String(Math.floor(deviceData["tempChannel"]))
           },
           "retrievable": true
         }
@@ -356,7 +360,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
           "type": "devices.properties.float",
           "state": {
             "instance": "temperature",
-            "value": deviceData["tempRoom"]
+            "value": String(Math.floor(deviceData["tempRoom"]))
           }
         }
         // Добавьте другие свойства устройства
