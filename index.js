@@ -96,7 +96,7 @@ app.post("/v1.0/auth", async (req, res) => {
       
       console.log("userId", userId);
       console.log("userJwt", userJwt);
-      console.log("userIdControllersArray", userIdControllersArray);
+      console.log("response.data", response.data);
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
