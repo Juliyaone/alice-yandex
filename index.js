@@ -24,7 +24,6 @@ let userIdControllersArray = [];
 console.log(("userIdControllersArray", userIdControllersArray));
 
 
-
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -312,7 +311,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
 app.post("/v1.0/user/devices/query", async (req, res) => {
   const userJwtYandex = req.headers.authorization;
   const requestId = req.headers["x-request-id"];
-  const ContentType = req.headers["Content-Type"];
+  const сontentType = req.headers["Content-Type"];
 
   console.log("req.body", req.body);
 
@@ -322,7 +321,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     
     // Здесь должна быть ваша логика для получения состояний устройств
     const devicesStatus = await getDevicesRequested();
-
+    console.log("devicesStatus", devicesStatus);
     // Предполагаем, что функция getDevicesStatus возвращает информацию об устройствах
     // const devicesParamsArray = devicesRequested.map(device => {
     //   return {
@@ -407,7 +406,7 @@ async function getDevicesRequested() {
   });
 
 
-  console.log("responseGetDevicesRequested", responseGetDevicesRequested);
+  // console.log("responseGetDevicesRequested", responseGetDevicesRequested);
 
   // {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
   
