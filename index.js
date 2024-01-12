@@ -23,6 +23,7 @@ let userIdControllersArray = [];
 
 console.log(("userIdControllersArray", userIdControllersArray));
 
+app.use(express.json());
 
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {
@@ -408,7 +409,7 @@ async function getDevicesRequested() {
 
   // console.log("responseGetDevicesRequested", responseGetDevicesRequested);
 
-  // {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
+  // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
   
 }
 
