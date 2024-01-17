@@ -265,13 +265,26 @@ app.get("/v1.0/user/devices", async (req, res) => {
                 "retrievable": true,
                 "parameters": {
                   "instance": "fan_speed",
-                  "random_access": true,
-                  "range": {
-                    "max": 10,
-                    "min": 0,
-                    "precision": 1
-                  },
-                  "unit": "none"
+                  "modes": [
+                    {
+                      "value": "auto"
+                    },
+                    {
+                      "value": "high"
+                    },
+                    {
+                      "value": "low"
+                    },
+                    {
+                      "value": "medium"
+                    },
+                    {
+                      "value": "quiet"
+                    },
+                    {
+                      "value": "turbo"
+                    },
+                  ]
                 }
               },
               {
@@ -317,14 +330,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
                     "instance": "humidity",
                     "unit": "unit.percent"
                   }
-                },{
-                  "type": "devices.properties.float",
-                  "retrievable": true,
-                  "parameters": {
-                    "instance": "speed",
-                    "unit": "unit.percent"
-                  }
-                }
+                },
               ],
               "device_info": {
                 "manufacturer": "Horynize",
