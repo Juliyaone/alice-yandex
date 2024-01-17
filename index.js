@@ -260,7 +260,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
                 }
               },
               {
-                "type": "devices.capabilities.range",
+                "type": "devices.capabilities.mode",
                 // скорость
                 "retrievable": true,
                 "parameters": {
