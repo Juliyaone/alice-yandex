@@ -256,7 +256,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
                     "min": 0,
                     "precision": 1
                   },
-                  "unit": "none"
+                  "unit": "unit.percent"
                 }
               },
               {
@@ -315,14 +315,14 @@ app.get("/v1.0/user/devices", async (req, res) => {
                   "retrievable": true,
                   "parameters": {
                     "instance": "humidity",
-                    "unit": "unit.humidity.percent"
+                    "unit": "unit.percent"
                   }
                 },{
                   "type": "devices.properties.float",
                   "retrievable": true,
                   "parameters": {
                     "instance": "speed",
-                    "unit": "unit.speed.percent"
+                    "unit": "unit.percent"
                   }
                 }
               ],
