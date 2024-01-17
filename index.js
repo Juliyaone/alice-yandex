@@ -18,10 +18,10 @@ const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 const authorizationCodes = {};
 let userId = "";
 let userJwt = "";
+let userJwtYandex ="";
 let controllersArray = [];
 let controllersArrayYandex = [];
 
-console.log(("controllersArray", controllersArray));
 
 app.use(express.json());
 
@@ -95,9 +95,11 @@ app.post("/v1.0/auth", async (req, res) => {
       userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
       controllersArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
       
-      console.log("userId", userId);
-      console.log("userJwt", userJwt);
-      console.log("response.data", response.data);
+      // console.log("userId", userId);
+      // console.log("userJwt", userJwt);
+      // console.log("response.data", response.data);
+      console.log(("controllersArray", controllersArray));
+
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
       const expiresIn = 600; // Время жизни кода в секундах (например, 2 минуты)
@@ -185,7 +187,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
   try {
     // Здесь нужно получить userID и JWT токен из запроса, предполагается, что они передаются в заголовках
-    const userJwtYandex = req.headers["authorization"];
+    userJwtYandex = req.headers["authorization"];
     const requestId = req.headers["x-request-id"];
     // const userID = req.headers['userID'];
     
@@ -201,6 +203,18 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
     // console.log("responseUserDevices", responseUserDevices);
 
+    //   {
+    //     "0": {
+    //         "id_user": 23
+    //     },
+    //     "vent-units": [
+    //         {
+    //             "id_controller": 20,
+    //             "name": ""
+    //         }
+    //     ]
+    // }
+
     // Отправляем ответ
     res.json(
       {
@@ -212,11 +226,12 @@ app.get("/v1.0/user/devices", async (req, res) => {
               "id": "kagdfjijp4e65896748763qmfiouybnoivy",
               "name": "Установка имя",
               "description": "Установка описание",
-              "room": "Установка комната",
+              "room": "",
               "type": "devices.types.thermostat.ac",
               // "custom_data": Object,
               "capabilities": [{
                 "type": "devices.capabilities.range",
+                // температура
                 "retrievable": true,
                 "parameters": {
                   "instance": "temperature",
@@ -230,61 +245,87 @@ app.get("/v1.0/user/devices", async (req, res) => {
                 }
               },
               {
-                "type": "devices.capabilities.mode",
+                "type": "devices.capabilities.range",
+                // влажность
+                "retrievable": true,
+                "parameters": {
+                  "instance": "humidity",
+                  "random_access": true,
+                  "range": {
+                    "max": 100,
+                    "min": 0,
+                    "precision": 1
+                  },
+                  "unit": "none"
+                }
+              },
+              {
+                "type": "devices.capabilities.range",
+                // скорость
                 "retrievable": true,
                 "parameters": {
                   "instance": "fan_speed",
-                  "modes": [{
-                    "value": "high"
+                  "random_access": true,
+                  "range": {
+                    "max": 10,
+                    "min": 0,
+                    "precision": 1
                   },
-                  {
-                    "value": "medium"
-                  },
-                  {
-                    "value": "low"
-                  },
-                  {
-                    "value": "auto"
-                  }
-                  ]
+                  "unit": "none"
                 }
               },
               {
                 "type": "devices.capabilities.mode",
+                // режимы
                 "retrievable": true,
                 "parameters": {
                   "instance": "thermostat",
-                  "modes": [{
-                    "value": "fan_only"
-                  },
-                  {
-                    "value": "heat"
-                  },
-                  {
-                    "value": "cool"
-                  },
-                  {
-                    "value": "dry"
-                  },
-                  {
-                    "value": "auto"
-                  }
+                  "modes": [
+                    {
+                      "value": "heat"
+                    },
+                    {
+                      "value": "cool"
+                    },
+                    {
+                      "value": "dry"
+                    },
+                    {
+                      "value": "auto"
+                    }
                   ]
                 }
               },
               {
                 "type": "devices.capabilities.on_off",
+                // вкл выкл
                 "retrievable": true
               }
               ],
-              "properties": [{
-                "type": "devices.properties.float",
-                "retrievable": true,
-                "parameters": {
-                  "instance": "temperature",
-                  "unit": "unit.temperature.celsius"
+              "properties": [
+                {
+                  "type": "devices.properties.float",
+                  "retrievable": true,
+                  "parameters": {
+                    "instance": "temperature",
+                    "unit": "unit.temperature.celsius"
+                  }
+                },{
+                  "type": "devices.properties.float",
+                  "retrievable": true,
+                  "parameters": {
+                    "instance": "humidity",
+                    "unit": "unit.humidity.percent"
+                  }
+                },{
+                  "type": "devices.properties.float",
+                  "retrievable": true,
+                  "parameters": {
+                    "instance": "speed",
+                    "unit": "unit.speed.percent"
+                  }
                 }
-              }],
+              ],
               "device_info": {
                 "manufacturer": "Horynize",
                 "model": "sf-350",
@@ -296,7 +337,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
     );
 
   } catch (error) {
-    // Логируем ошибку для дальнейшего анализа
     console.error("Error fetching devices:", error);
 
     // Отправляем ошибку в ответе
@@ -307,6 +347,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
     });
   }
 });
+
+
 
 // Информация о состояниях устройств пользователя
 app.post("/v1.0/user/devices/query", async (req, res) => {
@@ -332,7 +374,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     // Формирование ответа
 
 
-  // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
+    // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
 
     const responsePayload = devicesStatus["data"].map(deviceData => ({
       "id": controllersArrayYandex[0].id, // Используйте правильный ID устройства
@@ -363,7 +405,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             "value": String(Math.floor(deviceData["tempRoom"]))
           }
         }
-        // Добавьте другие свойства устройства
+      // Добавьте другие свойства устройства
       ]
     }));
 
