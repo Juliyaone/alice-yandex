@@ -488,13 +488,13 @@ function getAvailableModes(avalibleMode) {
   const modes = [];
   if (avalibleMode === 3) {
     // Вентиляция, нагрев, охлаждение, климат-контроль
-    modes.push({ "value": "ventilation" }, { "value": "heat" }, { "value": "cool" }, { "value": "auto" });
+    modes.push({ "value": "fan_only" }, { "value": "heat" }, { "value": "cool" }, { "value": "auto" });
   } else if (avalibleMode === 2) {
     // Вентиляция, нагрев
-    modes.push({ "value": "ventilation" }, { "value": "heat" });
+    modes.push({ "value": "fan_only" }, { "value": "heat" });
   } else if (avalibleMode === 1) {
     // Вентиляция, охлаждение
-    modes.push({ "value": "ventilation" }, { "value": "cool" });
+    modes.push({ "value": "fan_only" }, { "value": "cool" });
   }
   return modes;
 }
