@@ -201,8 +201,9 @@ app.get("/v1.0/user/devices", async (req, res) => {
     // Запрос на получение списка устройств
     const getUserDevicesResponse = await fetchUserDevices(userId, userJwt);
 
-    console.log("getUserDevicesResponse", getUserDevicesResponse);
     const ventUnits = getUserDevicesResponse.data["vent-units"];
+    console.log("ventUnits", ventUnits);
+
     let devices = [];
 
     for (const ventUnit of ventUnits) {
