@@ -192,10 +192,10 @@ app.post("/v1.0/refresh_token", async (req, res) => {
 app.get("/v1.0/user/devices", async (req, res) => {
 
   try {
-    
+
     userJwtYandex = req.headers["authorization"];
     const requestId = req.headers["x-request-id"];
-    const userId = req.headers["userId"];
+    // const userId = req.headers["userId"];
 
     
     // Запрос на получение списка устройств
