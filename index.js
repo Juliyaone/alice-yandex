@@ -381,7 +381,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               // вкл выкл
               "state": {
                 "instance": "on",
-                "value": deviceData.enabled === "1"
+                "value": deviceData.enabled === "1" ? true : false
               }
             },
             {
@@ -389,7 +389,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               // температура
               "state": {
                 "instance": "temperature",
-                "value": Math.floor(deviceData.tempRoom)
+                "value": String(Math.floor(deviceData.tempRoom))
               }
             },
             {
@@ -397,7 +397,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               // влажность
               "state": {
                 "instance": "humidity",
-                "value": Math.floor(deviceData.humRoom)
+                "value": String(Math.floor(deviceData.humRoom))
               }
             },
             {
@@ -405,7 +405,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               // скорость
               "state": {
                 "instance": "fan_speed",
-                "value": Math.floor(deviceData.fanSpeedP)
+                "value": String(Math.floor(deviceData.fanSpeedP))
               } 
             },
             {
@@ -413,7 +413,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               // режимы
               "state": {
                 "instance": "thermostat",
-                "value": Math.floor(deviceData.avalibleMode)
+                "value": String(Math.floor(deviceData.avalibleMode))
               } 
             },
           ],
@@ -422,13 +422,13 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               "type": "devices.properties.float",
               "state": {
                 "instance": "humidity",
-                "value": deviceData.humRoom
+                "value": String(Math.floor(deviceData.humRoom))
               }
             }, {
               "type": "devices.properties.float",
               "state": {
                 "instance": "temperature",
-                "value": deviceData.tempRoom
+                "value": String(Math.floor(deviceData.tempRoom))
               }
             }
             // Другие properties...
