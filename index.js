@@ -195,8 +195,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
     userJwtYandex = req.headers["authorization"];
     const requestId = req.headers["x-request-id"];
-    // const userId = req.headers["userId"];
-
     
     // Запрос на получение списка устройств
     const getUserDevicesResponse = await fetchUserDevices(userId, userJwt);
@@ -333,7 +331,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
       });
     }
     
-
     // отправляем ответ
     res.json({
       "request_id": requestId,
@@ -361,58 +358,91 @@ app.get("/v1.0/user/devices", async (req, res) => {
 app.post("/v1.0/user/devices/query", async (req, res) => {
   userJwtYandex = req.headers.authorization;
   const requestId = req.headers["x-request-id"];
-  const сontentType = req.headers["Content-Type"];
 
   try {
     // Извлекаем массив устройств из тела запроса
     const devicesArrayYandex = req.body.devices;
 
-    // Получение состояний устройств
-    const devicesStatus = await getDevicesRequested();
-    console.log("devicesStatus", devicesStatus);
+    let devicesPayload = [];
 
-    // Формирование ответа
+    for (const deviceRequest of devicesArrayYandex) {
+      // Запрос на получение параметров устройства
+      const getUserDevicesParamsResponse = await fetchDeviceParams(deviceRequest.id, userJwt);
 
+      // Проверяем наличие данных
+      if (getUserDevicesParamsResponse.data && getUserDevicesParamsResponse.data.data.length > 0) {
+        const deviceData = getUserDevicesParamsResponse.data.data[0];
 
-    // ожидаемый ответ {"vent-unit":[{"id_vent-unit":"20"}],"data":[{"enabled":"1","res":2,"tempChannel":29.89999999999999857891452847979962825775146484375,"ZagrFiltr":92,"fanSpeedP":1,"fanSpeedV":0,"tempRoom":19.300000000000000710542735760100185871124267578125,"humRoom":19,"co2Room":0,"tempTarget":30,"fanSpeedPTarget":1,"fanSpeedVTarget":0,"humRoomTarget":35,"co2RoomTarget":0,"mode":1}]}
+        // Здесь формируется состояние устройства в соответствии с полученными данными
+        devicesPayload.push({
+          "id": deviceRequest.id,
+          "capabilities": [
+            {
+              "type": "devices.capabilities.on_off",
+              // вкл выкл
+              "state": {
+                "instance": "on",
+                "value": deviceData.enabled === "1"
+              }
+            },
+            {
+              "type": "devices.capabilities.range",
+              // температура
+              "state": {
+                "instance": "temperature",
+                "value": Math.floor(deviceData.tempRoom)
+              }
+            },
+            {
+              "type": "devices.capabilities.range",
+              // влажность
+              "state": {
+                "instance": "humidity",
+                "value": Math.floor(deviceData.humRoom)
+              }
+            },
+            {
+              "type": "devices.capabilities.mode",
+              // скорость
+              "state": {
+                "instance": "fan_speed",
+                "value": Math.floor(deviceData.fanSpeedP)
+              } 
+            },
+            {
+              "type": "devices.capabilities.mode",
+              // режимы
+              "state": {
+                "instance": "thermostat",
+                "value": Math.floor(deviceData.avalibleMode)
+              } 
+            },
+          ],
+          "properties": [
+            {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "humidity",
+                "value": deviceData.humRoom
+              }
+            }, {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "temperature",
+                "value": deviceData.tempRoom
+              }
+            }
+            // Другие properties...
+          ]
+        });
+      }
+    }
 
-    const responsePayload = devicesStatus["data"].map(deviceData => ({
-      "id": devicesArrayYandex[0].id, // Используйте правильный ID устройства
-      "capabilities": [
-        {
-          "type": "devices.capabilities.on_off",
-          "state": {
-            "instance": "on",
-            "value": deviceData["enabled"] === "1"
-          },
-          "retrievable": true
-        },
-        {
-          "type": "devices.capabilities.range",
-          "state": {
-            "instance": "temperature",
-            "value":  String(Math.floor(deviceData["tempChannel"]))
-          },
-          "retrievable": true
-        }
-        // Добавьте другие возможности устройства в соответствии с их состоянием
-      ],
-      "properties": [
-        {
-          "type": "devices.properties.float",
-          "state": {
-            "instance": "temperature",
-            "value": String(Math.floor(deviceData["tempRoom"]))
-          }
-        }
-      // Добавьте другие свойства устройства
-      ]
-    }));
-
+    // Отправляем ответ
     res.json({
       "request_id": String(requestId),
       "payload": {
-        "devices": responsePayload
+        "devices": devicesPayload
       }
     });
   } catch (error) {
@@ -420,6 +450,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     res.status(500).send({ error: "Error querying device statuses" });
   }
 });
+
 
 
 
