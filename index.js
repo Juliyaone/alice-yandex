@@ -210,6 +210,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
       // Запрос на получение параметров устройства
       const getUserDevicesParamsResponse = await fetchDeviceParams(ventUnit.id_controller, userJwt);
       const availableModes = getAvailableModes(getUserDevicesParamsResponse.data.data[0].avalibleMode);
+      console.log("availableModes", availableModes);
 
       // Добавляем устройство в массив devices
       devices.push({
