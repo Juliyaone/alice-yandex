@@ -207,10 +207,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
     for (const ventUnit of ventUnits) {
       // Запрос на получение параметров устройства
       const getUserDevicesParamsResponse = await fetchDeviceParams(ventUnit.id_controller, userJwt);
-      console.log("getUserDevicesParamsResponse data:", getUserDevicesParamsResponse.data);
 
       const availableModes = getAvailableModes(getUserDevicesParamsResponse.data.data[0].avalibleMode);
-      console.log("availableModes", availableModes);
 
       // Добавляем устройство в массив devices
       devices.push({
@@ -361,7 +359,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
   try {
     // Извлекаем массив устройств из тела запроса
-    const devicesArrayYandex = req.body.devices;
+    const devicesArrayYandex = req.body;
+    console.log("devicesArrayYandex", devicesArrayYandex);
 
     let devicesPayload = [];
 
@@ -375,7 +374,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
         // Здесь формируется состояние устройства в соответствии с полученными данными
         devicesPayload.push({
-          "id": deviceRequest.id,
+          "id": String(deviceRequest.id),
           "capabilities": [
             {
               "type": "devices.capabilities.on_off",
