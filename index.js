@@ -488,7 +488,7 @@ function getAvailableModes(avalibleMode) {
   const modes = [];
   if (avalibleMode === 3) {
     // Вентиляция, нагрев, охлаждение, климат-контроль
-    modes.push({ "value": "ventilation" }, { "value": "heat" }, { "value": "cool" }, { "value": "climate_control" });
+    modes.push({ "value": "ventilation" }, { "value": "heat" }, { "value": "cool" }, { "value": "auto" });
   } else if (avalibleMode === 2) {
     // Вентиляция, нагрев
     modes.push({ "value": "ventilation" }, { "value": "heat" });
