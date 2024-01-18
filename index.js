@@ -216,7 +216,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
       // Добавляем устройство в массив devices
       devices.push({
-        "id": ventUnit.id_controller,
+        "id": String(ventUnit.id_controller),
         "name": "Вентиляционная установка",
         "description": "",
         "room": "",
@@ -287,7 +287,20 @@ app.get("/v1.0/user/devices", async (req, res) => {
             "retrievable": true,
             "parameters": {
               "instance": "thermostat",
-              "modes": availableModes
+              "modes": availableModes || [
+                {
+                  "value": "auto"
+                },
+                {
+                  "value": "heat"
+                },
+                {
+                  "value": "cool"
+                },
+                {
+                  "value": "fan_only"
+                },
+              ]
             }
           },
           {
@@ -315,7 +328,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
         ],
         "device_info": {
           "manufacturer": "Horynize",
-          "model": ventUnit.name,
+          "model": String(ventUnit.name),
         }
       });
     }
