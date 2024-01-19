@@ -366,12 +366,12 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
     for (const deviceRequest of devicesArrayYandex) {
       // Запрос на получение параметров устройства
-      const getUserDevicesParamsResponse = await fetchDeviceParams(deviceRequest.id, userJwt);
+      const getDevicesParamsResponse = await fetchDeviceParams(deviceRequest.id, userJwt);
 
       // Проверяем наличие данных
-      if (getUserDevicesParamsResponse.data && getUserDevicesParamsResponse.data.data.length > 0) {
-        const deviceData = getUserDevicesParamsResponse.data.data[0];
-
+      if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
+        const deviceData = getDevicesParamsResponse.data.data[0];
+        console.log("deviceData", deviceData);
         // Здесь формируется состояние устройства в соответствии с полученными данными
         devicesPayload.push({
           "id": String(deviceRequest.id),
@@ -449,7 +449,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     res.status(500).send({ error: "Error querying device statuses" });
   }
 });
-
 
 
 
