@@ -215,7 +215,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
         "id": String(ventUnit.id_controller),
         "name": "Вентиляционная установка",
         "description": "",
-        "room": "room",
+        "room": "",
         "type": "devices.types.thermostat.ac",
         // "custom_data": Object,
         "capabilities": [
