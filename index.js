@@ -359,7 +359,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
   try {
     // Извлекаем массив устройств из тела запроса
-    const devicesArrayYandex = req.body;
+    const devicesArrayYandex = req.body.devices;
     console.log("devicesArrayYandex", devicesArrayYandex);
 
     let devicesPayload = [];
