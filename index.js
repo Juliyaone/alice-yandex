@@ -456,15 +456,74 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
   try {
-    // Здесь должна быть ваша логика для изменения состояния устройства
-    // console.log("Device action requested", req.body);
-    // Выполните действие на основе тела запроса req.body
-    res.status(200).send({ message: "Device action executed successfully" });
+    const actions = req.body.payload.devices; // Получаем массив действий от яндекса
+    let results = [];
+
+    for (const action of actions) {
+      const deviceId = action.id;
+      const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
+
+      for (const capability of capabilities) {
+        const params = {
+          controllerId: deviceId,
+          // другие параметры
+        };
+
+        // В зависимости от типа capability, выполняем соответствующее действие
+        switch (capability.type) {
+        case "devices.capabilities.on_off":
+          // Выполнение действия включения/выключения
+          params.start = capability.state.value ? "1" : "0";
+          break;
+
+        case "devices.capabilities.range":
+          // Обработка разных типов range
+          switch (capability.parameters.instance) {
+          case "temperature":
+            params.tempTarget = String(capability.state.value);
+            break;
+          case "humidity":
+            params.HumTarget = String(capability.state.value);
+            break;
+          }
+          break;
+
+        case "devices.capabilities.mode":
+          // Обработка разных типов mode
+          switch (capability.parameters.instance) {
+          case "fan_speed":
+            params.fanTarget = String(capability.state.value);
+            break;
+          case "thermostat":
+            params.res = String(capability.state.value);
+            break;
+          }
+          break;
+        }
+
+        await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
+      }
+
+      results.push({
+        id: deviceId,
+        status: "DONE" // или "ERROR" в случае ошибки
+      });
+    }
+
+    res.json({
+      request_id: req.headers["x-request-id"],
+      payload: {
+        devices: results
+      }
+    });
   } catch (error) {
     console.error("Error performing action on device:", error);
     res.status(500).send({ error: "Error performing action on device" });
   }
 });
+
+
+
 
 
 // Сохраняем рефреш токен в базу
@@ -527,6 +586,31 @@ async function fetchDeviceParams(controllerId, userJwt) {
     }
   });
 }
+
+// Функция для изменения параметров устройства
+async function fetchDeviceChangeParams(params, userJwt) {
+  try {
+    const response = await axios.post("https://smart.horynize.ru/api/vent-units/setparams", params, {
+      headers: {
+        "Authorization": `Bearer ${userJwt}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    // Обработка успешного ответа
+    if (response.data && response.data.message === " command send ") {
+      console.log("Command sent successfully");
+      return response.data;
+    } else {
+      throw new Error("Unexpected response from API");
+    }
+  } catch (error) {
+    console.error("Error sending parameters:", error);
+    throw error;
+  }
+}
+
+
 
 // Функция для получения массива доступных режимов в зависимости от avalibleMode
 function getAvailableModes(avalibleMode) {
