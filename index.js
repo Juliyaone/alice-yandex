@@ -371,7 +371,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
         const deviceData = getDevicesParamsResponse.data.data[0];
-        // console.log("deviceData", deviceData);
+        console.log("deviceData", deviceData);
 
         let tempRoom = Math.floor(deviceData.tempRoom);
         let humRoom = Math.floor(deviceData.humRoom);
@@ -602,10 +602,13 @@ async function fetchDeviceChangeParams(params, userJwt) {
   try {
 
     console.log("params", params);
+    console.log("userJwtPARAMS", userJwt);
+
+
     const response = await axios.post("https://smart.horynize.ru/api/vent-units/setparams", params, {
       headers: {
         "Authorization": `Bearer ${userJwt}`,
-        "Content-Type": "application/json"
+        // "Content-Type": "application/json"
       }
     });
 
