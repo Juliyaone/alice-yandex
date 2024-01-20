@@ -615,12 +615,12 @@ async function fetchDeviceChangeParams(params, userJwt) {
     });
 
     // Обработка успешного ответа
-    if (response.data && response.data.message === " command send ") {
-      console.log("Command sent successfully");
-      return response.data;
-    } else {
-      throw new Error("Unexpected response from API");
-    }
+    // if (response.data && response.data.message === " command send ") {
+    console.log("Command sent successfully");
+    return response.data;
+    // } else {
+    //   throw new Error("Unexpected response from API");
+    // }
   } catch (error) {
     console.error("Error sending parameters:", error);
     throw error;
