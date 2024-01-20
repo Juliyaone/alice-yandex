@@ -489,7 +489,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
         case "devices.capabilities.range":
           // Обработка разных типов range
-          switch (capability.parameters.instance) {
+          switch (capability.state.instance) {
           case "temperature":
             params.tempTarget = String(capability.state.value);
             break;
@@ -501,7 +501,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
         case "devices.capabilities.mode":
           // Обработка разных типов mode
-          switch (capability.parameters.instance) {
+          switch (capability.state.instance) {
           case "fan_speed":
 
 
