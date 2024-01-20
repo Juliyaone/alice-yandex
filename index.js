@@ -360,7 +360,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
   try {
     // Извлекаем массив устройств из тела запроса
     const devicesArrayYandex = req.body.devices;
-    console.log("devicesArrayYandex", devicesArrayYandex);
+    // console.log("devicesArrayYandex", devicesArrayYandex);
 
     let devicesPayload = [];
 
@@ -371,7 +371,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
         const deviceData = getDevicesParamsResponse.data.data[0];
-        console.log("deviceData", deviceData);
+        // console.log("deviceData", deviceData);
 
         let tempRoom = Math.floor(deviceData.tempRoom);
         let humRoom = Math.floor(deviceData.humRoom);
@@ -463,9 +463,14 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
     let results = [];
 
+    console.log("actions", actions);
+
+
     for (const action of actions) {
       const deviceId = action.id;
       const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
+
+      console.log("capabilitiesYANDEX", capabilities);
 
       for (const capability of capabilities) {
         const params = {
