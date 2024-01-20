@@ -463,7 +463,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
     let results = [];
 
-    console.log("actions", actions);
+    console.log("actions", actions[0].capabilities);
 
 
     for (const action of actions) {
@@ -599,6 +599,8 @@ async function fetchDeviceParams(controllerId, userJwt) {
 // Функция для изменения параметров устройства
 async function fetchDeviceChangeParams(params, userJwt) {
   try {
+
+    console.log("params", params);
     const response = await axios.post("https://smart.horynize.ru/api/vent-units/setparams", params, {
       headers: {
         "Authorization": `Bearer ${userJwt}`,
