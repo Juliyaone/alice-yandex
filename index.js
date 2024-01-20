@@ -475,7 +475,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
       for (const capability of capabilities) {
         const params = {
-          controllerId: deviceId,
+          controllerId: String(deviceId),
           // другие параметры
         };
 
