@@ -471,6 +471,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
       const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
 
       console.log("capabilitiesYANDEX", capabilities);
+      console.log("deviceIdYANDEX", deviceId);
 
       for (const capability of capabilities) {
         const params = {
