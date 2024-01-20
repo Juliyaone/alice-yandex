@@ -456,6 +456,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 });
 
 
+let fan_speed_value = "";
 
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
@@ -502,9 +503,13 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
           // Обработка разных типов mode
           switch (capability.parameters.instance) {
           case "fan_speed":
-            capability.state.value === "auto" ? "4" : "1";
 
-            params.fanTarget = String(capability.state.value);
+
+            if (capability.state.value === "auto") {
+              fan_speed_value = "4";
+            }
+
+            params.fanTarget = fan_speed_value;
             break;
           case "thermostat":
             params.res = String(capability.state.value);
