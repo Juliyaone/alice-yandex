@@ -483,7 +483,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         switch (capability.type) {
         case "devices.capabilities.on_off":
           // Выполнение действия включения/выключения
-          params.start = capability.state.value === true ? "0" : "1";
+          params.start = capability.state.value === true ? "1" : "0";
           break;
 
         case "devices.capabilities.range":
