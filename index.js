@@ -483,7 +483,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         switch (capability.type) {
         case "devices.capabilities.on_off":
           // Выполнение действия включения/выключения
-          params.start = capability.state.value === true ? "1" : "0";
+          params.start = capability.state.value === true ? "0" : "1";
           break;
 
         case "devices.capabilities.range":
@@ -502,6 +502,8 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
           // Обработка разных типов mode
           switch (capability.parameters.instance) {
           case "fan_speed":
+            capability.state.value === "auto" ? "4" : "1";
+
             params.fanTarget = String(capability.state.value);
             break;
           case "thermostat":
