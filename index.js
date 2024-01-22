@@ -365,9 +365,16 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     let devicesPayload = [];
 
     for (const device of devicesArrayYandex) {
+
+      if (!userJwt) {
+        console.error("JWT token is undefined.");
+        return;
+      }
+
       // Запрос на получение параметров устройства
       const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
+      
       // Проверяем наличие данных
       // if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
       const deviceData = getDevicesParamsResponse.data.data[0];
@@ -596,6 +603,7 @@ async function fetchUserDevices(userId, userJwt) {
 
 // Функция для запроса параметров устройства
 async function fetchDeviceParams(controllerId, userJwt) {
+
   return await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
     "controllerId": String(controllerId),
   }, {
