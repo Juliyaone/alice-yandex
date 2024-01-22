@@ -283,20 +283,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
             "retrievable": true,
             "parameters": {
               "instance": "thermostat",
-              "modes": availableModes || [
-                {
-                  "value": "auto"
-                },
-                {
-                  "value": "heat"
-                },
-                {
-                  "value": "cool"
-                },
-                {
-                  "value": "fan_only"
-                },
-              ]
+              "modes": availableModes
             }
           },
           {
@@ -350,8 +337,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
   }
 });
 
-
-
 // Информация о состояниях устройств пользователя
 app.post("/v1.0/user/devices/query", async (req, res) => {
   userJwtYandex = req.headers.authorization;
@@ -374,7 +359,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Запрос на получение параметров устройства
       const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
-      
+      const availableModes = getAvailableModes(getDevicesParamsResponse.data.data[0].avalibleMode);
+
       // Проверяем наличие данных
       // if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
       const deviceData = getDevicesParamsResponse.data.data[0];
@@ -426,7 +412,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // режимы
             "state": {
               "instance": "thermostat",
-              "value": deviceData.avalibleMode
+              "value": availableModes
             } 
           },
         ],
@@ -640,8 +626,6 @@ async function fetchDeviceChangeParams(params, userJwt) {
     throw error;
   }
 }
-
-
 
 // Функция для получения массива доступных режимов в зависимости от avalibleMode
 function getAvailableModes(avalibleMode) {
