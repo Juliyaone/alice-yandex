@@ -364,82 +364,82 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
     let devicesPayload = [];
 
-    for (const deviceRequest of devicesArrayYandex) {
+    for (const device of devicesArrayYandex) {
       // Запрос на получение параметров устройства
-      const getDevicesParamsResponse = await fetchDeviceParams(deviceRequest.id, userJwt);
+      const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
       // Проверяем наличие данных
-      if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
-        const deviceData = getDevicesParamsResponse.data.data[0];
-        console.log("deviceData", deviceData);
+      // if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
+      const deviceData = getDevicesParamsResponse.data.data[0];
+      console.log("deviceData", deviceData);
 
-        let tempRoom = Math.floor(deviceData.tempRoom);
-        let humRoom = Math.floor(deviceData.humRoom);
+      let tempRoom = Math.floor(deviceData.tempRoom);
+      let humRoom = Math.floor(deviceData.humRoom);
 
 
-        // Здесь формируется состояние устройства в соответствии с полученными данными
-        devicesPayload.push({
-          "id": String(deviceRequest.id),
-          "capabilities": [
-            {
-              "type": "devices.capabilities.on_off",
-              // вкл выкл
-              "state": {
-                "instance": "on",
-                "value": deviceData.enabled === "1" ? true : false
-              }
-            },
-            {
-              "type": "devices.capabilities.range",
-              // температура
-              "state": {
-                "instance": "temperature",
-                "value": String(tempRoom)
-              }
-            },
-            {
-              "type": "devices.capabilities.range",
-              // влажность
-              "state": {
-                "instance": "humidity",
-                "value": String(humRoom)
-              }
-            },
-            {
-              "type": "devices.capabilities.mode",
-              // скорость
-              "state": {
-                "instance": "fan_speed",
-                "value": deviceData.fanSpeedP
-              } 
-            },
-            {
-              "type": "devices.capabilities.mode",
-              // режимы
-              "state": {
-                "instance": "thermostat",
-                "value": deviceData.avalibleMode
-              } 
-            },
-          ],
-          "properties": [
-            {
-              "type": "devices.properties.float",
-              "state": {
-                "instance": "humidity",
-                "value": String(humRoom)
-              }
-            }, {
-              "type": "devices.properties.float",
-              "state": {
-                "instance": "temperature",
-                "value": String(tempRoom)
-              }
+      // Здесь формируется состояние устройства в соответствии с полученными данными
+      devicesPayload.push({
+        "id": String(device.id),
+        "capabilities": [
+          {
+            "type": "devices.capabilities.on_off",
+            // вкл выкл
+            "state": {
+              "instance": "on",
+              "value": deviceData.enabled === "1" ? true : false
             }
-            // Другие properties...
-          ]
-        });
-      }
+          },
+          {
+            "type": "devices.capabilities.range",
+            // температура
+            "state": {
+              "instance": "temperature",
+              "value": String(tempRoom)
+            }
+          },
+          {
+            "type": "devices.capabilities.range",
+            // влажность
+            "state": {
+              "instance": "humidity",
+              "value": String(humRoom)
+            }
+          },
+          {
+            "type": "devices.capabilities.mode",
+            // скорость
+            "state": {
+              "instance": "fan_speed",
+              "value": deviceData.fanSpeedP
+            } 
+          },
+          {
+            "type": "devices.capabilities.mode",
+            // режимы
+            "state": {
+              "instance": "thermostat",
+              "value": deviceData.avalibleMode
+            } 
+          },
+        ],
+        "properties": [
+          {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "humidity",
+              "value": String(humRoom)
+            }
+          }, {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "temperature",
+              "value": String(tempRoom)
+            }
+          }
+          // Другие properties...
+        ]
+      });
+      // }
     }
 
     // Отправляем ответ
