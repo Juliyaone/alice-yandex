@@ -375,7 +375,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
-
+      let enabledData = deviceData.enabled === "1" ? true : false;
+      let fanSpeedPData = deviceData.fanSpeedP;
 
       // Здесь формируется состояние устройства в соответствии с полученными данными
       devicesPayload.push({
@@ -386,7 +387,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // вкл выкл
             "state": {
               "instance": "on",
-              "value": deviceData.enabled === "1" ? true : false
+              "value": enabledData
             }
           },
           {
@@ -410,7 +411,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // скорость
             "state": {
               "instance": "fan_speed",
-              "value": deviceData.fanSpeedP
+              "value": String(fanSpeedPData)
             } 
           },
           {
