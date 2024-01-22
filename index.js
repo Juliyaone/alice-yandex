@@ -418,22 +418,22 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             } 
           },
         ],
-        // "properties": [
-        //   {
-        //     "type": "devices.properties.float",
-        //     "state": {
-        //       "instance": "humidity",
-        //       "value": String(humRoom)
-        //     }
-        //   }, {
-        //     "type": "devices.properties.float",
-        //     "state": {
-        //       "instance": "temperature",
-        //       "value": String(tempRoom)
-        //     }
-        //   }
-        //   // Другие properties...
-        // ]
+        "properties": [
+          {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "humidity",
+              "value": humRoom
+            }
+          }, {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "temperature",
+              "value": tempRoom
+            }
+          }
+          // Другие properties...
+        ]
       });
       // }
     }
