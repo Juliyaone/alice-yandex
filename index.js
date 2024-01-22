@@ -359,12 +359,13 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Запрос на получение параметров устройства
       const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
-      const availableModes = getAvailableModes(getDevicesParamsResponse.data.data[0].avalibleMode);
 
       // Проверяем наличие данных
       // if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
       const deviceData = getDevicesParamsResponse.data.data[0];
       console.log("deviceData", deviceData);
+
+      let availableModes = getAvailableModes(deviceData.avalibleMode);
 
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
