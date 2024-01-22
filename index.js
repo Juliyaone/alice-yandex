@@ -366,6 +366,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       console.log("deviceData", deviceData);
 
       let availableModes = getAvailableModes(deviceData.avalibleMode);
+      console.log("availableModes", availableModes);
 
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
