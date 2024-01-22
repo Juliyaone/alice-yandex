@@ -289,7 +289,11 @@ app.get("/v1.0/user/devices", async (req, res) => {
           {
             "type": "devices.capabilities.on_off",
             // вкл выкл
-            "retrievable": true
+            "retrievable": true,
+            "parameters": {
+              "instance": "on",
+              "value": true
+            }
           }
         ],
         "properties": [
@@ -370,7 +374,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
-      let enabledData = deviceData.enabled === "1" ? true : false;
+      let enabledData = deviceData.enabled == "1" ? true : false;
       let fanSpeedPData = deviceData.fanSpeedP;
 
       // Здесь формируется состояние устройства в соответствии с полученными данными
