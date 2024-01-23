@@ -210,6 +210,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
       const availableModes = getAvailableModes(getUserDevicesParamsResponse.data.data[0].avalibleMode);
 
+      let enabled = getUserDevicesParamsResponse.data.data[0].enabled === "1" ? true : false;
+
       // Добавляем устройство в массив devices
       devices.push({
         "id": String(ventUnit.id_controller),
@@ -289,10 +291,10 @@ app.get("/v1.0/user/devices", async (req, res) => {
           {
             "type": "devices.capabilities.on_off",
             // вкл выкл
-            "retrievable": true,
+            "retrievable": false,
+            "reportable": false,
             "parameters": {
-              "instance": "on",
-              "value": true
+              "split": false
             }
           }
         ],
@@ -383,10 +385,9 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         "capabilities": [
           {
             "type": "devices.capabilities.on_off",
-            // вкл выкл
             "state": {
               "instance": "on",
-              "value": enabledData
+              "value": true
             }
           },
           {
@@ -523,9 +524,20 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
       results.push({
         id: deviceId,
-        status: "DONE" // или "ERROR" в случае ошибки
+        capabilities: [
+          {
+            "type": "devices.capabilities.on_off",
+            "state": {
+              "instance": "on",
+              "action_result": {
+                "status": "DONE"
+              }
+            }
+          },
+        ]
       });
     }
+
 
     res.json({
       request_id: req.headers["x-request-id"],
