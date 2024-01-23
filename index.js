@@ -294,7 +294,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
             "retrievable": true,
             "parameters": {
               "instance": "on",
-              "modes": availableModes
             },
             "state": {
               "instance": "on",
