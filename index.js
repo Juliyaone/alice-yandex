@@ -291,10 +291,14 @@ app.get("/v1.0/user/devices", async (req, res) => {
           {
             "type": "devices.capabilities.on_off",
             // вкл выкл
-            "retrievable": false,
-            "reportable": false,
+            "retrievable": true,
             "parameters": {
-              "split": false
+              "instance": "on",
+              "value": enabled
+            },
+            "state": {
+              "instance": "on",
+              "value": enabled
             }
           }
         ],
@@ -385,9 +389,10 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         "capabilities": [
           {
             "type": "devices.capabilities.on_off",
+            // вкл выкл
             "state": {
               "instance": "on",
-              "value": true
+              "value": enabledData
             }
           },
           {
@@ -524,20 +529,9 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
       results.push({
         id: deviceId,
-        capabilities: [
-          {
-            "type": "devices.capabilities.on_off",
-            "state": {
-              "instance": "on",
-              "action_result": {
-                "status": "DONE"
-              }
-            }
-          },
-        ]
+        status: "DONE" // или "ERROR" в случае ошибки
       });
     }
-
 
     res.json({
       request_id: req.headers["x-request-id"],
