@@ -223,108 +223,178 @@ app.get("/v1.0/user/devices", async (req, res) => {
         "room": "",
         "type": "devices.types.thermostat.ac",
         // "custom_data": Object,
-        "capabilities": [
-          {
-            "type": "devices.capabilities.range",
-            // температура
-            "retrievable": true,
-            "parameters": {
-              "instance": "temperature",
-              "random_access": true,
-              "range": {
-                "max": 30,
-                "min": 15,
-                "precision": 1
-              },
-              "unit": "unit.temperature.celsius"
-            }
-          },
-          {
-            "type": "devices.capabilities.range",
-            // влажность
-            "retrievable": true,
-            "parameters": {
-              "instance": "humidity",
-              "random_access": true,
-              "range": {
-                "max": 100,
-                "min": 0,
-                "precision": 1
-              },
-              "unit": "unit.percent"
+        // "capabilities": [
+        //   {
+        //     "type": "devices.capabilities.range",
+        //     // температура
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "temperature",
+        //       "random_access": true,
+        //       "range": {
+        //         "max": 30,
+        //         "min": 15,
+        //         "precision": 1
+        //       },
+        //       "unit": "unit.temperature.celsius"
+        //     }
+        //   },
+        //   {
+        //     "type": "devices.capabilities.range",
+        //     // влажность
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "humidity",
+        //       "random_access": true,
+        //       "range": {
+        //         "max": 100,
+        //         "min": 0,
+        //         "precision": 1
+        //       },
+        //       "unit": "unit.percent"
+        //     },
+        //     "state": {
+        //       "instance": "humidity",
+        //       "value": Number(getUserDevicesParamsResponse.data.data[0].humRoom)
+        //     }
+        //   },
+        //   {
+        //     "type": "devices.capabilities.mode",
+        //     // скорость
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "fan_speed",
+        //       "modes": [
+        //         {
+        //           "value": "auto"
+        //         },
+        //         {
+        //           "value": "high"
+        //         },
+        //         {
+        //           "value": "low"
+        //         },
+        //         {
+        //           "value": "medium"
+        //         },
+        //         {
+        //           "value": "quiet"
+        //         },
+        //         {
+        //           "value": "turbo"
+        //         },
+        //       ]
+        //     }
+        //   },
+        //   {
+        //     "type": "devices.capabilities.mode",
+        //     // режимы
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "thermostat",
+        //       "modes": availableModes
+        //     }
+        //   },
+        //   {
+        //     "type": "devices.capabilities.on_off",
+        //     // вкл выкл
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "on",
+        //     },
+        //     "state": {
+        //       "instance": "on",
+        //       "value": enabled
+        //     }
+        //   }
+        // ],
+        // "properties": [
+        //   {
+        //     "type": "devices.properties.float",
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "temperature",
+        //       "unit": "unit.temperature.celsius"
+        //     }
+        //   },{
+        //     "type": "devices.properties.float",
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "humidity",
+        //       "unit": "unit.percent"
+        //     }
+        //   },
+        // ],
+        "capabilities": [{
+          "type": "devices.capabilities.range",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "random_access": true,
+            "range": {
+              "max": 33,
+              "min": 18,
+              "precision": 1
             },
-            "state": {
-              "instance": "humidity",
-              "value": Number(getUserDevicesParamsResponse.data.data[0].humRoom)
-            }
-          },
-          {
-            "type": "devices.capabilities.mode",
-            // скорость
-            "retrievable": true,
-            "parameters": {
-              "instance": "fan_speed",
-              "modes": [
-                {
-                  "value": "auto"
-                },
-                {
-                  "value": "high"
-                },
-                {
-                  "value": "low"
-                },
-                {
-                  "value": "medium"
-                },
-                {
-                  "value": "quiet"
-                },
-                {
-                  "value": "turbo"
-                },
-              ]
-            }
-          },
-          {
-            "type": "devices.capabilities.mode",
-            // режимы
-            "retrievable": true,
-            "parameters": {
-              "instance": "thermostat",
-              "modes": availableModes
-            }
-          },
-          {
-            "type": "devices.capabilities.on_off",
-            // вкл выкл
-            "retrievable": true,
-            "parameters": {
-              "instance": "on",
-            },
-            "state": {
-              "instance": "on",
-              "value": enabled
-            }
+            "unit": "unit.temperature.celsius"
           }
-        ],
-        "properties": [
-          {
-            "type": "devices.properties.float",
-            "retrievable": true,
-            "parameters": {
-              "instance": "temperature",
-              "unit": "unit.temperature.celsius"
+        },
+        {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "fan_speed",
+            "modes": [{
+              "value": "high"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "low"
+            },
+            {
+              "value": "auto"
             }
-          },{
-            "type": "devices.properties.float",
-            "retrievable": true,
-            "parameters": {
-              "instance": "humidity",
-              "unit": "unit.percent"
+            ]
+          }
+        },
+        {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "thermostat",
+            "modes": [{
+              "value": "fan_only"
+            },
+            {
+              "value": "heat"
+            },
+            {
+              "value": "cool"
+            },
+            {
+              "value": "dry"
+            },
+            {
+              "value": "auto"
             }
-          },
+            ]
+          }
+        },
+        {
+          "type": "devices.capabilities.on_off",
+          "retrievable": true
+        }
         ],
+        "properties": [{
+          "type": "devices.properties.float",
+          "retrievable": true,
+          "parameters": {
+            "instance": "temperature",
+            "unit": "unit.celsius"
+          }
+        }],
         "device_info": {
           "manufacturer": "Horynize",
           "model": String(ventUnit.name),
