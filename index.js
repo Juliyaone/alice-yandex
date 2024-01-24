@@ -364,11 +364,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
     for (const device of devicesArrayYandex) {
 
-      if (!userJwt) {
-        console.error("JWT token is undefined.");
-        return;
-      }
-
       // Запрос на получение параметров устройства
       const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
@@ -403,7 +398,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // температура
             "state": {
               "instance": "temperature",
-              "value": String(tempRoom)
+              "value": tempRoom
             }
           },
           {
