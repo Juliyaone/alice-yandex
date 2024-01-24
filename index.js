@@ -455,7 +455,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       let humRoom = Math.floor(deviceData.humRoom);
       let enabledData = deviceData.enabled == "1" ? true : false;
       let fanSpeedPData = Number(deviceData.fanSpeedP);
-      let tempChannel = deviceData.tempChannel;
+      let tempChannel = Math.floor(deviceData.tempChannel);
 
       console.log("tempRoom", tempRoom);
       console.log("humRoom", humRoom);
