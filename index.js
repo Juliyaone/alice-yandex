@@ -525,7 +525,11 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             }
           }
         ]
-      });
+      }, {
+        "id": String(device.id),
+        "error_code": "DEVICE_NOT_FOUND",
+        "error_message": "the human readable error message"
+      }, );
       // }
     }
 
@@ -533,8 +537,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     res.json({
       "request_id": String(requestId),
       "payload": {
-        "devices": devicesPayload
-      }
+        "devices": devicesPayload,
+      },
     });
   } catch (error) {
     console.error("Error querying device statuses:", error);
