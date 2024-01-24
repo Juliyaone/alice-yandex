@@ -301,23 +301,23 @@ app.get("/v1.0/user/devices", async (req, res) => {
             }
           }
         ],
-        "properties": [
-          {
-            "type": "devices.properties.float",
-            "retrievable": true,
-            "parameters": {
-              "instance": "temperature",
-              "unit": "unit.temperature.celsius"
-            }
-          },{
-            "type": "devices.properties.float",
-            "retrievable": true,
-            "parameters": {
-              "instance": "humidity",
-              "unit": "unit.percent"
-            }
-          },
-        ],
+        // "properties": [
+        //   {
+        //     "type": "devices.properties.float",
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "temperature",
+        //       "unit": "unit.temperature.celsius"
+        //     }
+        //   },{
+        //     "type": "devices.properties.float",
+        //     "retrievable": true,
+        //     "parameters": {
+        //       "instance": "humidity",
+        //       "unit": "unit.percent"
+        //     }
+        //   },
+        // ],
         "device_info": {
           "manufacturer": "Horynize",
           "model": String(ventUnit.name),
@@ -427,22 +427,22 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             } 
           },
         ],
-        "properties": [
-          {
-            "type": "devices.properties.float",
-            "state": {
-              "instance": "humidity",
-              "value": humRoom
-            }
-          }, {
-            "type": "devices.properties.float",
-            "state": {
-              "instance": "temperature",
-              "value": tempRoom
-            }
-          }
-          // Другие properties...
-        ]
+        // "properties": [
+        //   {
+        //     "type": "devices.properties.float",
+        //     "state": {
+        //       "instance": "humidity",
+        //       "value": humRoom
+        //     }
+        //   }, {
+        //     "type": "devices.properties.float",
+        //     "state": {
+        //       "instance": "temperature",
+        //       "value": tempRoom
+        //     }
+        //   }
+        //   // Другие properties...
+        // ]
       });
       // }
     }
