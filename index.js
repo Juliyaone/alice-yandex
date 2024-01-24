@@ -6,6 +6,7 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const { log } = require("console");
 
 require("dotenv").config();
 
@@ -380,26 +381,15 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       let availableModes = getAvailableModes(deviceData.avalibleMode);
       console.log("availableModes", availableModes);
 
-
-
-
-      // availableModes [
-
-      // { value: 'fan_only' },
-
-      // { value: 'heat' },
-
-      // { value: 'cool' },
-
-      // { value: 'auto' }
-      //  ]
-
-
-
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
       let enabledData = deviceData.enabled == "1" ? true : false;
       let fanSpeedPData = Number(deviceData.fanSpeedP);
+
+      console.log("tempRoom", tempRoom);
+      console.log("humRoom", humRoom);
+      console.log("enabledData", enabledData);
+      console.log("fanSpeedPData", fanSpeedPData);
 
 
       // Здесь формируется состояние устройства в соответствии с полученными данными
