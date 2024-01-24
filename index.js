@@ -507,7 +507,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // скорость
             "state": {
               "instance": "fan_speed",
-              "value": fanSpeedPData
+              "value": "auto"
             } 
           },
           {

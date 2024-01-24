@@ -1,0 +1,68 @@
+  ответ яндексу о состояниях устройств пользователя {
+    "request_id": "b48a15cb-6a11-4354-b7af-a30e73dd37fd",
+    "payload": {
+      "devices": [
+        {
+          "id": "20",
+          "capabilities": [
+            {
+              "type": "devices.capabilities.on_off",
+              "state": {
+                "instance": "on",
+                "value": true
+              }
+            },
+            {
+              "type": "devices.capabilities.range",
+              "state": {
+                "instance": "temperature",
+                "value": 21
+              }
+            },
+            {
+              "type": "devices.capabilities.range",
+              "state": {
+                "instance": "humidity",
+                "value": 21
+              }
+            },
+            {
+              "type": "devices.capabilities.mode",
+              "state": {
+                "instance": "fan_speed",
+                "value": 6
+              }
+            },
+            {
+              "type": "devices.capabilities.mode",
+              "state": {
+                "instance": "thermostat",
+                "value": "auto"
+              }
+            }
+          ],
+          "properties": [
+            {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "humidity",
+                "value": 21
+              }
+            },
+            {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "temperature",
+                "value": 22
+              }
+            }
+          ]
+        },
+        {
+          "id": "20",
+          "error_code": "DEVICE_NOT_FOUND",
+          "error_message": "the human readable error message"
+        }
+      ]
+    }
+  }
