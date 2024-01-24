@@ -404,13 +404,14 @@ app.get("/v1.0/user/devices", async (req, res) => {
     
     // отправляем ответ
 
-    console.log("ответ яндексу об устройствах пользователя", {
+    console.log("ответ яндексу об устройствах пользователя",  JSON.stringify({
       "request_id": requestId,
       "payload": {
         "user_id": String(userId),
         "devices": devices
       }
-    });
+    }, null, 2));
+    
     res.json({
       "request_id": requestId,
       "payload": {
@@ -541,12 +542,12 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // }
     }
 
-    console.log("ответ яндексу о состояниях устройств пользователя", {
+    console.log("ответ яндексу о состояниях устройств пользователя", JSON.stringify({
       "request_id": String(requestId),
       "payload": {
         "devices": devicesPayload,
       },
-    });
+    }, null, 2));
 
     // Отправляем ответ
     res.json({
@@ -635,12 +636,13 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     }
 
 
-    console.log("ответ яндексу Изменение состояния у устройств", {
+    console.log("ответ яндексу Изменение состояния у устройств", JSON.stringify({
       request_id: req.headers["x-request-id"],
       payload: {
         devices: results
       }
-    });
+    }, null, 2));
+
 
     res.json({
       request_id: req.headers["x-request-id"],
