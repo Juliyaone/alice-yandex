@@ -385,11 +385,14 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       let humRoom = Math.floor(deviceData.humRoom);
       let enabledData = deviceData.enabled == "1" ? true : false;
       let fanSpeedPData = Number(deviceData.fanSpeedP);
+      let tempChannel = deviceData.tempChannel;
 
       console.log("tempRoom", tempRoom);
       console.log("humRoom", humRoom);
       console.log("enabledData", enabledData);
       console.log("fanSpeedPData", fanSpeedPData);
+      console.log("tempChannel", tempChannel);
+      
 
 
       // Здесь формируется состояние устройства в соответствии с полученными данными
@@ -448,7 +451,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             "type": "devices.properties.float",
             "state": {
               "instance": "temperature",
-              "value": tempRoom
+              "value": tempChannel
             }
           }
         ]
