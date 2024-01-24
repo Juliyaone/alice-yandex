@@ -249,6 +249,10 @@ app.get("/v1.0/user/devices", async (req, res) => {
                 "precision": 1
               },
               "unit": "unit.percent"
+            },
+            "state": {
+              "instance": "humidity",
+              "value": getUserDevicesParamsResponse.data.data[0].humRoom
             }
           },
           {
