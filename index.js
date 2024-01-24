@@ -251,7 +251,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
               "unit": "unit.percent"
             },
             "state": {
-              "instance": "humidity",
               "value": Number(getUserDevicesParamsResponse.data.data[0].humRoom)
             }
           },
@@ -300,7 +299,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
               "instance": "on",
             },
             "state": {
-              "instance": "on",
               "value": enabled
             }
           }
@@ -405,40 +403,40 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
           {
             "type": "devices.capabilities.on_off",
             // вкл выкл
+            "instance": "on",
             "state": {
-              "instance": "on",
               "value": enabledData
             }
           },
           {
             "type": "devices.capabilities.range",
             // температура
+            "instance": "temperature",
             "state": {
-              "instance": "temperature",
               "value": tempRoom
             }
           },
           {
             "type": "devices.capabilities.range",
             // влажность
+            "instance": "humidity",
             "state": {
-              "instance": "humidity",
               "value": humRoom
             }
           },
           {
             "type": "devices.capabilities.mode",
             // скорость
+            "instance": "fan_speed",
             "state": {
-              "instance": "fan_speed",
               "value": fanSpeedPData
             } 
           },
           {
             "type": "devices.capabilities.mode",
             // режимы
+            "instance": "thermostat",
             "state": {
-              "instance": "thermostat",
               "value": "auto"
             } 
           },
@@ -446,14 +444,14 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         "properties": [
           {
             "type": "devices.properties.float",
+            "instance": "humidity",
             "state": {
-              "instance": "humidity",
               "value": humRoom
             }
           }, {
             "type": "devices.properties.float",
+            "instance": "temperature",
             "state": {
-              "instance": "temperature",
               "value": tempRoom
             }
           }
