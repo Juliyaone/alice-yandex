@@ -190,6 +190,7 @@ app.post("/v1.0/refresh_token", async (req, res) => {
 
 // Информация об устройствах пользователя
 app.get("/v1.0/user/devices", async (req, res) => {
+  console.log("Информация об устройствах пользователя app.get/v1.0/user/devices");
 
   try {
 
@@ -209,6 +210,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
       const getUserDevicesParamsResponse = await fetchDeviceParams(ventUnit.id_controller, userJwt);
 
       const availableModes = getAvailableModes(getUserDevicesParamsResponse.data.data[0].avalibleMode);
+
 
       let enabled = getUserDevicesParamsResponse.data.data[0].enabled === "1" ? true : false;
 
@@ -352,6 +354,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
 // Информация о состояниях устройств пользователя
 app.post("/v1.0/user/devices/query", async (req, res) => {
+  console.log("Информация о состояниях устройств пользователя app.get/v1.0/user/devices/query");
+
   userJwtYandex = req.headers.authorization;
   const requestId = req.headers["x-request-id"];
 
@@ -480,6 +484,7 @@ let fan_speed_value = "";
 
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
+  console.log("Изменение состояния у устройств пользователя app.get/v1.0/user/devices/action");
   try {
     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
     let results = [];
