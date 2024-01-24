@@ -336,7 +336,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
               "min": 18,
               "precision": 1
             },
-            "unit": "unit.celsius"
+            "unit": "unit.temperature.celsius"
           }
         },
         {
@@ -392,7 +392,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
           "retrievable": true,
           "parameters": {
             "instance": "temperature",
-            "unit": "unit.celsius"
+            "unit": "unit.temperature.celsius"
           }
         }],
         "device_info": {
