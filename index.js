@@ -403,6 +403,14 @@ app.get("/v1.0/user/devices", async (req, res) => {
     }
     
     // отправляем ответ
+
+    console.log("ответ яндексу об устройствах пользователя", {
+      "request_id": requestId,
+      "payload": {
+        "user_id": String(userId),
+        "devices": devices
+      }
+    });
     res.json({
       "request_id": requestId,
       "payload": {
@@ -533,6 +541,13 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // }
     }
 
+    console.log("ответ яндексу о состояниях устройств пользователя", {
+      "request_id": String(requestId),
+      "payload": {
+        "devices": devicesPayload,
+      },
+    });
+
     // Отправляем ответ
     res.json({
       "request_id": String(requestId),
@@ -618,6 +633,14 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         status: "DONE" // или "ERROR" в случае ошибки
       });
     }
+
+
+    console.log("ответ яндексу Изменение состояния у устройств", {
+      request_id: req.headers["x-request-id"],
+      payload: {
+        devices: results
+      }
+    });
 
     res.json({
       request_id: req.headers["x-request-id"],
