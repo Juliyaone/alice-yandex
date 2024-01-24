@@ -252,7 +252,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
             },
             "state": {
               "instance": "humidity",
-              "value": getUserDevicesParamsResponse.data.data[0].humRoom
+              "value": Number(getUserDevicesParamsResponse.data.data[0].humRoom)
             }
           },
           {
@@ -376,10 +376,27 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       let availableModes = getAvailableModes(deviceData.avalibleMode);
       console.log("availableModes", availableModes);
 
+
+
+
+      // availableModes [
+
+      // { value: 'fan_only' },
+
+      // { value: 'heat' },
+
+      // { value: 'cool' },
+
+      // { value: 'auto' }
+      //  ]
+
+
+
       let tempRoom = Math.floor(deviceData.tempRoom);
       let humRoom = Math.floor(deviceData.humRoom);
       let enabledData = deviceData.enabled == "1" ? true : false;
-      let fanSpeedPData = deviceData.fanSpeedP;
+      let fanSpeedPData = Number(deviceData.fanSpeedP);
+
 
       // Здесь формируется состояние устройства в соответствии с полученными данными
       devicesPayload.push({
@@ -422,7 +439,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             // режимы
             "state": {
               "instance": "thermostat",
-              "value": availableModes
+              "value": "auto"
             } 
           },
         ],
