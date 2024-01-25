@@ -442,7 +442,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
   try {
     // Извлекаем массив устройств из тела запроса
     const devicesArrayYandex = req.body.devices;
-    // console.log("devicesArrayYandex", devicesArrayYandex);
+    console.log("devicesArrayYandex", devicesArrayYandex);
 
     let devicesPayload = [];
 
@@ -472,11 +472,9 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       console.log("fanSpeedPData", fanSpeedPData);
       console.log("tempChannel", tempChannel);
       
-
-
       // Здесь формируется состояние устройства в соответствии с полученными данными
       devicesPayload.push({
-        "id": String(device.id),
+        "id": device.id,
         "capabilities": [
           {
             "type": "devices.capabilities.on_off",
