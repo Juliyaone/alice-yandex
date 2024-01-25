@@ -387,14 +387,23 @@ app.get("/v1.0/user/devices", async (req, res) => {
           "retrievable": true
         }
         ],
-        "properties": [{
-          "type": "devices.properties.float",
-          "retrievable": true,
-          "parameters": {
-            "instance": "temperature",
-            "unit": "unit.temperature.celsius"
-          }
-        }],
+        "properties": [
+          {
+            "type": "devices.properties.float",
+            "retrievable": true,
+            "parameters": {
+              "instance": "temperature",
+              "unit": "unit.temperature.celsius"
+            }
+          },{
+            "type": "devices.properties.float",
+            "retrievable": true,
+            "parameters": {
+              "instance": "humidity",
+              "unit": "unit.percent"
+            }
+          },
+        ],
         "device_info": {
           "manufacturer": "Horynize",
           "model": String(ventUnit.name),
