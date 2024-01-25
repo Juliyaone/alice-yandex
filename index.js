@@ -532,11 +532,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
             }
           }
         ]
-      }, {
-        "id": String(device.id),
-        "error_code": "DEVICE_NOT_FOUND",
-        "error_message": "the human readable error message"
-      }, );
+      });
       // }
     }
 
