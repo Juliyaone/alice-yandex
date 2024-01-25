@@ -566,7 +566,8 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
     let results = [];
 
-    console.log("actions", actions[0].capabilities);
+    console.log("actions", JSON.stringify(actions));
+
 
 
     for (const action of actions) {
