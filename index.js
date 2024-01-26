@@ -481,90 +481,129 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
 
 // Изменение состояния у устройств
-app.post("/v1.0/user/devices/action", async (req, res) => {
-  console.log("Изменение состояния у устройств пользователя app.get/v1.0/user/devices/action");
-  try {
-    const actions = req.body.payload.devices; // Получаем массив действий от яндекса
-    let results = [];
+// app.post("/v1.0/user/devices/action", async (req, res) => {
+//   console.log("Изменение состояния у устройств пользователя app.get/v1.0/user/devices/action");
+//   try {
+//     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
+//     let results = [];
 
-    console.log("actions", JSON.stringify(actions));
+//     console.log("actions", JSON.stringify(actions));
+
+//     for (const action of actions) {
+//       const deviceId = action.id;
+//       const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
+
+//       for (const capability of capabilities) {
+//         const params = {
+//           controllerId: String(deviceId),
+//         };
+
+//         // В зависимости от типа capability, выполняем соответствующее действие
+//         switch (capability.type) {
+//         case "devices.capabilities.on_off":
+//           params.start = capability.state.value === true ? "1" : "0";
+//           break;
+
+//         case "devices.capabilities.range":
+//           switch (capability.state.instance) {
+//           case "temperature":
+//             params.tempTarget = String(capability.state.value);
+//             break;
+//           case "humidity":
+//             params.HumTarget = String(capability.state.value);
+//             params.CO2Target = "700";
+//             params.activeFilter = "0";
+//             break;
+//           }
+//           break;
+
+//         case "devices.capabilities.mode":
+//         {
+//           switch (capability.state.instance) {
+//           case "fan_speed": {
+//             let fanspeedData= "";
+
+//             const fanSpeedMapForApi = {
+//               "low": "2",
+//               "auto": "4",
+//               "medium": "6",
+//               "high": "8",
+//               "turbo": "10"
+//             };
+//             fanspeedData = fanSpeedMapForApi[capability.state.value] || capability.state.value;
+//             console.log("fanspeedData", fanspeedData);
+
+//             params.fanTarget = fanspeedData;
+//             break;
+//           }
+              
+//           case "thermostat": {
+//             const modeMapForApi = {
+//               "fan_only": "1",
+//               "cool": "2",
+//               "heat": "3",
+//               "auto": "4"
+//             };
+
+//             let modeData = "";
+//             modeData = modeMapForApi[capability.state.value] || capability.state.value;
+//             console.log("modeData", modeData);
+//             params.res = modeData;
+//             break;
+//           }
+//           }
+
+//           await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
+//           break;
+//         }
+
+//         }
+
+//         results.push({
+//           id: deviceId,
+//           status: "DONE" // или "ERROR" в случае ошибки
+//         });
+//       }
+//     }
+//     res.json({
+//       request_id: req.headers["x-request-id"],
+//       payload: {
+//         devices: results
+//       }
+//     });
+//   } catch (error) {
+//     console.error("Error performing action on device:", error);
+//     res.status(500).send({ error: "Error performing action on device" });
+//   }
+// });
+
+// Изменение состояния у устройств
+app.post("/v1.0/user/devices/action", async (req, res) => {
+  console.log("Изменение состояния у устройств пользователя");
+  try {
+    const actions = req.body.payload.devices;
+    let results = [];
 
     for (const action of actions) {
       const deviceId = action.id;
-      const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
+      const capabilities = action.capabilities;
+      const params = { controllerId: String(deviceId) };
 
-      for (const capability of capabilities) {
-        const params = {
-          controllerId: String(deviceId),
-        };
-
-        // В зависимости от типа capability, выполняем соответствующее действие
-        switch (capability.type) {
-        case "devices.capabilities.on_off":
-          params.start = capability.state.value === true ? "1" : "0";
-          break;
-
-        case "devices.capabilities.range":
-          switch (capability.state.instance) {
-          case "temperature":
-            params.tempTarget = String(capability.state.value);
-            break;
-          case "humidity":
-            params.HumTarget = String(capability.state.value);
-            params.CO2Target = "700";
-            params.activeFilter = "0";
-            break;
-          }
-          break;
-
-        case "devices.capabilities.mode":
-        {
-          switch (capability.state.instance) {
-          case "fan_speed": {
-            let fanspeedData= "";
-
-            const fanSpeedMapForApi = {
-              "low": "2",
-              "auto": "4",
-              "medium": "6",
-              "high": "8",
-              "turbo": "10"
-            };
-            fanspeedData = fanSpeedMapForApi[capability.state.value] || capability.state.value;
-            console.log("fanspeedData", fanspeedData);
-
-            params.fanTarget = fanspeedData;
-            break;
-          }
-              
-          case "thermostat": {
-            const modeMapForApi = {
-              "fan_only": "1",
-              "cool": "2",
-              "heat": "3",
-              "auto": "4"
-            };
-
-            let modeData = "";
-            modeData = modeMapForApi[capability.state.value] || capability.state.value;
-            console.log("modeData", modeData);
-            params.res = modeData;
-            break;
-          }
-          }
-
-          await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
-          break;
+      capabilities.forEach((capability) => {
+        const handler = handlersChangeParams[capability.type];
+        if (handler) {
+          handler(capability, params);
         }
+      });
 
-        }
+      await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
 
-        results.push({
-          id: deviceId,
-          status: "DONE" // или "ERROR" в случае ошибки
-        });
-      }
+      results.push({
+        id: deviceId,
+        status: "DONE" // или "ERROR" в случае ошибки
+      });
     }
+
     res.json({
       request_id: req.headers["x-request-id"],
       payload: {
@@ -576,6 +615,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     res.status(500).send({ error: "Error performing action on device" });
   }
 });
+
 
 
 // Сохраняем рефреш токен в базу
@@ -669,6 +709,48 @@ async function fetchDeviceChangeParams(params, userJwt) {
     throw error;
   }
 }
+
+// Объекты карты для соответствия значений
+const fanSpeedMapForApi = {
+  "low": "2",
+  "auto": "4",
+  "medium": "6",
+  "high": "8",
+  "turbo": "10"
+};
+
+const modeMapForApi = {
+  "fan_only": "1",
+  "cool": "2",
+  "heat": "3",
+  "auto": "4"
+};
+
+// Функции для обработки каждого типа capability
+const handlersChangeParams = {
+  "devices.capabilities.on_off": (capability, params) => {
+    params.start = capability.state.value === true ? "1" : "0";
+  },
+  "devices.capabilities.range": (capability, params) => {
+    const { instance, value } = capability.state;
+    if (instance === "temperature") {
+      params.tempTarget = String(value);
+    } else if (instance === "humidity") {
+      params.HumTarget = String(value);
+      params.CO2Target = "700";
+      params.activeFilter = "0";
+    }
+  },
+  "devices.capabilities.mode": (capability, params) => {
+    const { instance, value } = capability.state;
+    if (instance === "fan_speed") {
+      params.fanTarget = fanSpeedMapForApi[value] || value;
+    } else if (instance === "thermostat") {
+      params.res = modeMapForApi[value] || value;
+    }
+  }
+};
+
 
 // Функция для получения массива доступных режимов в зависимости от avalibleMode
 function getAvailableModes(avalibleMode) {
