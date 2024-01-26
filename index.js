@@ -332,8 +332,8 @@ app.get("/v1.0/user/devices", async (req, res) => {
             "instance": "temperature",
             "random_access": true,
             "range": {
-              "max": 33,
-              "min": 18,
+              "max": 30,
+              "min": 15,
               "precision": 1
             },
             "unit": "unit.temperature.celsius"
@@ -355,6 +355,9 @@ app.get("/v1.0/user/devices", async (req, res) => {
             },
             {
               "value": "auto"
+            },
+            {
+              "value": "turbo"
             }
             ]
           }
@@ -372,9 +375,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
             },
             {
               "value": "cool"
-            },
-            {
-              "value": "dry"
             },
             {
               "value": "auto"
@@ -462,87 +462,105 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
 
       // Проверяем наличие данных
-      // if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
-      const deviceData = getDevicesParamsResponse.data.data[0];
-      console.log("deviceData", deviceData);
+      if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
+        const deviceData = getDevicesParamsResponse.data.data[0];
+        console.log("deviceData", deviceData);
 
-      let availableModes = getAvailableModes(deviceData.avalibleMode);
-      console.log("availableModes", availableModes);
+        let availableModes = getAvailableModes(deviceData.avalibleMode);
+        console.log("availableModes", availableModes);
 
-      let tempRoom = Math.floor(deviceData.tempRoom);
-      let humRoom = Math.floor(deviceData.humRoom);
-      let enabledData = deviceData.enabled == "1" ? true : false;
-      let fanSpeedPData = Number(deviceData.fanSpeedP);
-      let tempChannel = Math.floor(deviceData.tempChannel);
+        let enabledData = deviceData.enabled == "1" ? true : false;
+        console.log("enabledData", enabledData);
 
-      console.log("tempRoom", tempRoom);
-      console.log("humRoom", humRoom);
-      console.log("enabledData", enabledData);
-      console.log("fanSpeedPData", fanSpeedPData);
-      console.log("tempChannel", tempChannel);
+        let tempRoomData = Math.floor(deviceData.tempRoom);
+        console.log("tempRoom", tempRoomData);
+
+        let humRoomData = Math.floor(deviceData.humRoom);
+        console.log("humRoom", humRoomData);
+
+        const fanSpeedMapForYandex = {
+          "2": "low",
+          "4": "auto",
+          "6": "medium",
+          "8": "high",
+          "10": "turbo"
+        };
+        let fanSpeedPData = deviceData.fanSpeedP;
+        fanSpeedPData = fanSpeedMapForYandex[fanSpeedPData] || fanSpeedPData;
+        console.log("fanSpeedPData", fanSpeedPData);
+
+        const modeMap = {
+          "1": "fan_only",
+          "2": "cool",
+          "3": "heat",
+          "4": "auto"
+        };
+        let modeData = deviceData.res;
+        modeData = modeMap[modeData] || modeData;
+        console.log("modeData", modeData);
+
+        let tempChannelData = Math.floor(deviceData.tempChannel);
+        console.log("tempChannelData", tempChannelData);
+
+
       
-      // Здесь формируется состояние устройства в соответствии с полученными данными
-      devicesPayload.push({
-        "id": device.id,
-        "capabilities": [
-          {
-            "type": "devices.capabilities.on_off",
-            // вкл выкл
-            "state": {
-              "instance": "on",
-              "value": enabledData
+        // Здесь формируется состояние устройства в соответствии с полученными данными
+        devicesPayload.push({
+          "id": device.id,
+          "capabilities": [
+            {
+              "type": "devices.capabilities.range",
+              "state": {
+                "instance": "temperature",
+                "value": tempRoomData
+              }
+            },
+            {
+              "type": "devices.capabilities.range",
+              "state": {
+                "instance": "humidity",
+                "value": humRoomData
+              }
+            },
+            {
+              "type": "devices.capabilities.mode",
+              "state": {
+                "instance": "fan_speed",
+                "value": fanSpeedPData
+              } 
+            },
+            {
+              "type": "devices.capabilities.mode",
+              "state": {
+                "instance": "thermostat",
+                "value": modeData
+              } 
+            },
+            {
+              "type": "devices.capabilities.on_off",
+              "state": {
+                "instance": "on",
+                "value": enabledData
+              }
+            },
+          ],
+          "properties": [
+            {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "humidity",
+                "value": humRoomData
+              }
+            }, {
+              "type": "devices.properties.float",
+              "state": {
+                "instance": "temperature",
+                "value": tempChannelData
+              }
             }
-          },
-          {
-            "type": "devices.capabilities.range",
-            // температура
-            "state": {
-              "instance": "temperature",
-              "value": tempRoom
-            }
-          },
-          {
-            "type": "devices.capabilities.range",
-            // влажность
-            "state": {
-              "instance": "humidity",
-              "value": humRoom
-            }
-          },
-          {
-            "type": "devices.capabilities.mode",
-            // скорость
-            "state": {
-              "instance": "fan_speed",
-              "value": "auto"
-            } 
-          },
-          {
-            "type": "devices.capabilities.mode",
-            // режимы
-            "state": {
-              "instance": "thermostat",
-              "value": "auto"
-            } 
-          },
-        ],
-        "properties": [
-          {
-            "type": "devices.properties.float",
-            "state": {
-              "instance": "humidity",
-              "value": humRoom
-            }
-          }, {
-            "type": "devices.properties.float",
-            "state": {
-              "instance": "temperature",
-              "value": tempChannel
-            }
-          }
-        ]
-      });
-      // }
+          ]
+        });
+      }
     }
 
     console.log("ответ яндексу о состояниях устройств пользователя", JSON.stringify({
@@ -566,7 +584,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 });
 
 
-let fan_speed_value = "";
 
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
@@ -577,30 +594,22 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
     console.log("actions", JSON.stringify(actions));
 
-
-
     for (const action of actions) {
       const deviceId = action.id;
       const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
 
-      console.log("capabilitiesYANDEX", capabilities);
-      console.log("deviceIdYANDEX", deviceId);
-
       for (const capability of capabilities) {
         const params = {
           controllerId: String(deviceId),
-          // другие параметры
         };
 
         // В зависимости от типа capability, выполняем соответствующее действие
         switch (capability.type) {
         case "devices.capabilities.on_off":
-          // Выполнение действия включения/выключения
           params.start = capability.state.value === true ? "1" : "0";
           break;
 
         case "devices.capabilities.range":
-          // Обработка разных типов range
           switch (capability.state.instance) {
           case "temperature":
             params.tempTarget = String(capability.state.value);
@@ -612,42 +621,53 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
           break;
 
         case "devices.capabilities.mode":
-          // Обработка разных типов mode
+        {
           switch (capability.state.instance) {
-          case "fan_speed":
+          case "fan_speed": {
+            let fanspeedData= "";
 
+            const fanSpeedMapForApi = {
+              "low": "2",
+              "auto": "4",
+              "medium": "6",
+              "high": "8",
+              "turbo": "10"
+            };
+            fanspeedData = fanSpeedMapForApi[capability.state.value] || capability.state.value;
+            console.log("fanspeedData", fanspeedData);
 
-            if (capability.state.value === "auto") {
-              fan_speed_value = "4";
-            }
-
-            params.fanTarget = fan_speed_value;
-            break;
-          case "thermostat":
-            params.res = String(capability.state.value);
+            params.fanTarget = fanspeedData;
             break;
           }
+              
+          case "thermostat": {
+            const modeMapForApi = {
+              "fan_only": "1",
+              "cool": "2",
+              "heat": "3",
+              "auto": "4"
+            };
+
+            let modeData = "";
+            modeData = modeMapForApi[capability.state.value] || capability.state.value;
+            console.log("modeData", modeData);
+            params.res = modeData;
+            break;
+          }
+          }
+
+          await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
           break;
         }
 
-        await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
-      }
+        }
 
-      results.push({
-        id: deviceId,
-        status: "DONE" // или "ERROR" в случае ошибки
-      });
+        results.push({
+          id: deviceId,
+          status: "DONE" // или "ERROR" в случае ошибки
+        });
+      }
     }
-
-
-    console.log("ответ яндексу Изменение состояния у устройств", JSON.stringify({
-      request_id: req.headers["x-request-id"],
-      payload: {
-        devices: results
-      }
-    }, null, 2));
-
-
     res.json({
       request_id: req.headers["x-request-id"],
       payload: {
@@ -659,9 +679,6 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     res.status(500).send({ error: "Error performing action on device" });
   }
 });
-
-
-
 
 
 // Сохраняем рефреш токен в базу
