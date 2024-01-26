@@ -264,35 +264,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
           "type": "devices.capabilities.mode",
           "retrievable": true,
           "parameters": {
-            "instance": "work_speed",
-            "modes": [{
-              "value": "auto"
-            },
-            {
-              "value": "fast"
-            },
-            {
-              "value": "max"
-            },
-            {
-              "value": "medium"
-            },
-            {
-              "value": "min"
-            },
-            {
-              "value": "slow"
-            },
-            {
-              "value": "turbo"
-            }
-            ]
-          }
-        },
-        {
-          "type": "devices.capabilities.mode",
-          "retrievable": true,
-          "parameters": {
             "instance": "thermostat",
             "modes": [{
               "value": "fan_only"
