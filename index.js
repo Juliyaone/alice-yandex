@@ -376,7 +376,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         let tempRoomData = Math.floor(deviceData.tempRoom);
         console.log("tempRoomData", tempRoomData);
 
-
         let humRoomData = Math.floor(deviceData.humRoom);
         console.log("humRoom", humRoomData);
 
@@ -393,16 +392,13 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
         const modeMap = {
           "1": "fan_only",
-          "2": "cool",
-          "3": "heat",
+          "2": "heat",
+          "3": "cool",
           "4": "auto"
         };
         let modeData = deviceData.res;
         modeData = modeMap[modeData] || modeData;
         console.log("modeData", modeData);
-
-
-
       
         // Здесь формируется состояние устройства в соответствии с полученными данными
         devicesPayload.push({
@@ -516,6 +512,8 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
             break;
           case "humidity":
             params.HumTarget = String(capability.state.value);
+            params.CO2Target = "700";
+            params.activeFilter = "0";
             break;
           }
           break;
