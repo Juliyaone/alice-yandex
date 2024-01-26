@@ -6,15 +6,11 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { log } = require("console");
 
 require("dotenv").config();
 
 
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
-// const clientSecret = process.env.CLIENT_SECRET;
-// const clientId = process.env.CLIENT_ID;
-// console.log('secretKeyForToken', secretKeyForToken);
 
 const authorizationCodes = {};
 
@@ -66,25 +62,96 @@ app.post("/v1.0/user/unlink", async (req, res) => {
 });
 
 // Страница авторизации
-app.get("/v1.0/login", (req, res) => {
+// app.get("/v1.0/login", (req, res) => {
  
-  const { client_id, redirect_uri, state } = req.query;
-  // Отображаем форму для ввода логина и пароля
+//   const { client_id, redirect_uri, state } = req.query;
+//   // Отображаем форму для ввода логина и пароля
 
+//   res.send(`
+//     <form action="/v1.0/auth" method="post">
+//       <input type="hidden" name="client_id" value="${client_id}">
+//       <input type="hidden" name="redirect_uri" value="${redirect_uri}">
+//       <input type="hidden" name="state" value="${state}">
+
+//       <label for="username">Логин:</label>
+//       <input type="text" id="username" name="username"><br>
+//       <label for="password">Пароль:</label>
+//       <input type="password" id="password" name="password"><br>
+//       <input type="submit" value="Войти">
+//     </form>
+//   `);
+// });
+// Страница авторизации
+app.get("/v1.0/login", (req, res) => {
+  const { client_id, redirect_uri, state } = req.query;
+
+  // Встроенные стили
+  const style = `
+    <style>
+      body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f7f7f7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      label {
+        display: block;
+        margin-bottom: 5px;
+      }
+      input[type="text"],
+      input[type="password"] {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-sizing: border-box; /* So that the width includes padding */
+      }
+      input[type="submit"] {
+        background-color: #5cacf9;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      input[type="submit"]:hover {
+        background-color: #4a9cdf;
+      }
+    </style>
+  `;
+
+  // HTML с встроенными стилями
   res.send(`
+    ${style}
     <form action="/v1.0/auth" method="post">
       <input type="hidden" name="client_id" value="${client_id}">
       <input type="hidden" name="redirect_uri" value="${redirect_uri}">
       <input type="hidden" name="state" value="${state}">
-
-      <label for="username">Логин:</label>
-      <input type="text" id="username" name="username"><br>
-      <label for="password">Пароль:</label>
-      <input type="password" id="password" name="password"><br>
-      <input type="submit" value="Войти">
+      <div>
+        <label for="username">Логин:</label>
+        <input type="text" id="username" name="username">
+      </div>
+      <div>
+        <label for="password">Пароль:</label>
+        <input type="password" id="password" name="password">
+      </div>
+      <div>
+        <input type="submit" value="Войти">
+      </div>
     </form>
   `);
 });
+
 
 app.post("/v1.0/auth", async (req, res) => {
   try {
@@ -478,104 +545,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
   }
 });
 
-
-
-// Изменение состояния у устройств
-// app.post("/v1.0/user/devices/action", async (req, res) => {
-//   console.log("Изменение состояния у устройств пользователя app.get/v1.0/user/devices/action");
-//   try {
-//     const actions = req.body.payload.devices; // Получаем массив действий от яндекса
-//     let results = [];
-
-//     console.log("actions", JSON.stringify(actions));
-
-//     for (const action of actions) {
-//       const deviceId = action.id;
-//       const capabilities = action.capabilities; // Получаем массив действий для каждого устройства
-
-//       for (const capability of capabilities) {
-//         const params = {
-//           controllerId: String(deviceId),
-//         };
-
-//         // В зависимости от типа capability, выполняем соответствующее действие
-//         switch (capability.type) {
-//         case "devices.capabilities.on_off":
-//           params.start = capability.state.value === true ? "1" : "0";
-//           break;
-
-//         case "devices.capabilities.range":
-//           switch (capability.state.instance) {
-//           case "temperature":
-//             params.tempTarget = String(capability.state.value);
-//             break;
-//           case "humidity":
-//             params.HumTarget = String(capability.state.value);
-//             params.CO2Target = "700";
-//             params.activeFilter = "0";
-//             break;
-//           }
-//           break;
-
-//         case "devices.capabilities.mode":
-//         {
-//           switch (capability.state.instance) {
-//           case "fan_speed": {
-//             let fanspeedData= "";
-
-//             const fanSpeedMapForApi = {
-//               "low": "2",
-//               "auto": "4",
-//               "medium": "6",
-//               "high": "8",
-//               "turbo": "10"
-//             };
-//             fanspeedData = fanSpeedMapForApi[capability.state.value] || capability.state.value;
-//             console.log("fanspeedData", fanspeedData);
-
-//             params.fanTarget = fanspeedData;
-//             break;
-//           }
-              
-//           case "thermostat": {
-//             const modeMapForApi = {
-//               "fan_only": "1",
-//               "cool": "2",
-//               "heat": "3",
-//               "auto": "4"
-//             };
-
-//             let modeData = "";
-//             modeData = modeMapForApi[capability.state.value] || capability.state.value;
-//             console.log("modeData", modeData);
-//             params.res = modeData;
-//             break;
-//           }
-//           }
-
-//           await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
-//           break;
-//         }
-
-//         }
-
-//         results.push({
-//           id: deviceId,
-//           status: "DONE" // или "ERROR" в случае ошибки
-//         });
-//       }
-//     }
-//     res.json({
-//       request_id: req.headers["x-request-id"],
-//       payload: {
-//         devices: results
-//       }
-//     });
-//   } catch (error) {
-//     console.error("Error performing action on device:", error);
-//     res.status(500).send({ error: "Error performing action on device" });
-//   }
-// });
 
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
