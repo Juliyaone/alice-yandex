@@ -709,7 +709,8 @@ async function fetchUserDevices(userId, userJwt) {
     "status": "1"
   }, {
     headers: {
-      "Authorization": `Bearer ${userJwt}`
+      "Authorization": `Bearer ${userJwt}`,
+      "Content-Type": "application/json"
     }
   });
 }
@@ -721,7 +722,8 @@ async function fetchDeviceParams(controllerId, userJwt) {
     "controllerId": String(controllerId),
   }, {
     headers: {
-      "Authorization": `Bearer ${userJwt}`
+      "Authorization": `Bearer ${userJwt}`,
+      "Content-Type": "application/json"
     }
   });
 }
@@ -737,7 +739,7 @@ async function fetchDeviceChangeParams(params, userJwt) {
     const response = await axios.post("https://smart.horynize.ru/api/vent-units/setparams", params, {
       headers: {
         "Authorization": `Bearer ${userJwt}`,
-        // "Content-Type": "application/json"
+        "Content-Type": "application/json"
       }
     });
 
