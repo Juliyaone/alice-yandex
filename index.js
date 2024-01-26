@@ -223,108 +223,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
         "room": "",
         "type": "devices.types.thermostat.ac",
         // "custom_data": Object,
-        // "capabilities": [
-        //   {
-        //     "type": "devices.capabilities.range",
-        //     // температура
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "temperature",
-        //       "random_access": true,
-        //       "range": {
-        //         "max": 30,
-        //         "min": 15,
-        //         "precision": 1
-        //       },
-        //       "unit": "unit.temperature.celsius"
-        //     }
-        //   },
-        //   {
-        //     "type": "devices.capabilities.range",
-        //     // влажность
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "humidity",
-        //       "random_access": true,
-        //       "range": {
-        //         "max": 100,
-        //         "min": 0,
-        //         "precision": 1
-        //       },
-        //       "unit": "unit.percent"
-        //     },
-        //     "state": {
-        //       "instance": "humidity",
-        //       "value": Number(getUserDevicesParamsResponse.data.data[0].humRoom)
-        //     }
-        //   },
-        //   {
-        //     "type": "devices.capabilities.mode",
-        //     // скорость
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "fan_speed",
-        //       "modes": [
-        //         {
-        //           "value": "auto"
-        //         },
-        //         {
-        //           "value": "high"
-        //         },
-        //         {
-        //           "value": "low"
-        //         },
-        //         {
-        //           "value": "medium"
-        //         },
-        //         {
-        //           "value": "quiet"
-        //         },
-        //         {
-        //           "value": "turbo"
-        //         },
-        //       ]
-        //     }
-        //   },
-        //   {
-        //     "type": "devices.capabilities.mode",
-        //     // режимы
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "thermostat",
-        //       "modes": availableModes
-        //     }
-        //   },
-        //   {
-        //     "type": "devices.capabilities.on_off",
-        //     // вкл выкл
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "on",
-        //     },
-        //     "state": {
-        //       "instance": "on",
-        //       "value": enabled
-        //     }
-        //   }
-        // ],
-        // "properties": [
-        //   {
-        //     "type": "devices.properties.float",
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "temperature",
-        //       "unit": "unit.temperature.celsius"
-        //     }
-        //   },{
-        //     "type": "devices.properties.float",
-        //     "retrievable": true,
-        //     "parameters": {
-        //       "instance": "humidity",
-        //       "unit": "unit.percent"
-        //     }
-        //   },
-        // ],
         "capabilities": [{
           "type": "devices.capabilities.range",
           "retrievable": true,
@@ -355,6 +253,35 @@ app.get("/v1.0/user/devices", async (req, res) => {
             },
             {
               "value": "auto"
+            },
+            {
+              "value": "turbo"
+            }
+            ]
+          }
+        },
+        {
+          "type": "devices.capabilities.mode",
+          "retrievable": true,
+          "parameters": {
+            "instance": "work_speed",
+            "modes": [{
+              "value": "auto"
+            },
+            {
+              "value": "fast"
+            },
+            {
+              "value": "max"
+            },
+            {
+              "value": "medium"
+            },
+            {
+              "value": "min"
+            },
+            {
+              "value": "slow"
             },
             {
               "value": "turbo"
