@@ -358,7 +358,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Запрос на получение параметров устройства
       const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
-
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
         const deviceData = getDevicesParamsResponse.data.data[0];
@@ -392,8 +391,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
         const modeMap = {
           "1": "fan_only",
-          "2": "heat",
-          "3": "cool",
+          "2": "cool",
+          "3": "heat",
           "4": "auto"
         };
         let modeData = deviceData.res;
