@@ -472,8 +472,12 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         let enabledData = deviceData.enabled == "1" ? true : false;
         console.log("enabledData", enabledData);
 
+        let tempTargetData = Math.floor(deviceData.tempTarget);
+        console.log("tempTargetData", tempTargetData);
+
         let tempRoomData = Math.floor(deviceData.tempRoom);
-        console.log("tempRoom", tempRoomData);
+        console.log("tempRoomData", tempRoomData);
+
 
         let humRoomData = Math.floor(deviceData.humRoom);
         console.log("humRoom", humRoomData);
@@ -499,8 +503,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         modeData = modeMap[modeData] || modeData;
         console.log("modeData", modeData);
 
-        let tempChannelData = Math.floor(deviceData.tempChannel);
-        console.log("tempChannelData", tempChannelData);
 
 
       
@@ -512,7 +514,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               "type": "devices.capabilities.range",
               "state": {
                 "instance": "temperature",
-                "value": tempRoomData
+                "value": tempTargetData
               }
             },
             {
@@ -555,7 +557,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
               "type": "devices.properties.float",
               "state": {
                 "instance": "temperature",
-                "value": tempChannelData
+                "value": tempRoomData
               }
             }
           ]
