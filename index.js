@@ -463,8 +463,8 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
         const modeMap = {
           "1": "fan_only",
-          "2": "cool",
-          "3": "heat",
+          "2": "heat",
+          "3": "cool",
           "4": "auto"
         };
         let modeData = deviceData.res;
@@ -705,8 +705,8 @@ const fanSpeedMapForApi = {
 
 const modeMapForApi = {
   "fan_only": "1",
-  "cool": "2",
-  "heat": "3",
+  "heat": "2",
+  "cool": "3",
   "auto": "4"
 };
 
