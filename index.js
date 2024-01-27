@@ -279,9 +279,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
       const availableModes = getAvailableModes(getUserDevicesParamsResponse.data.data[0].avalibleMode);
 
-
-      let enabled = getUserDevicesParamsResponse.data.data[0].enabled === "1" ? true : false;
-
       // Добавляем устройство в массив devices
       devices.push({
         "id": String(ventUnit.id_controller),
@@ -289,7 +286,6 @@ app.get("/v1.0/user/devices", async (req, res) => {
         "description": "",
         "room": "",
         "type": "devices.types.thermostat.ac",
-        // "custom_data": Object,
         "capabilities": [{
           "type": "devices.capabilities.range",
           "retrievable": true,
@@ -332,19 +328,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
           "retrievable": true,
           "parameters": {
             "instance": "thermostat",
-            "modes": [{
-              "value": "fan_only"
-            },
-            {
-              "value": "heat"
-            },
-            {
-              "value": "cool"
-            },
-            {
-              "value": "auto"
-            }
-            ]
+            "modes": availableModes
           }
         },
         {
