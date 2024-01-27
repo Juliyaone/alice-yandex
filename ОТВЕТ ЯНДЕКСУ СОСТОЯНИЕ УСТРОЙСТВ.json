@@ -1,0 +1,69 @@
+ОТВЕТ ЯНДЕКСУ СОСТОЯНИЕ УСТРОЙСТВ {
+  "request_id": "4c4e7c36-673a-40f9-b3b2-91da732dfc00",
+  "payload": {
+    "devices": [
+      {
+        "id": "20",
+        "capabilities": [
+          {
+            "type": "devices.capabilities.range",
+            "state": {
+              "instance": "temperature",
+              "value": 25
+            }
+          },
+          {
+            "type": "devices.capabilities.range",
+            "state": {
+              "instance": "humidity",
+              "value": 22
+            }
+          },
+          {
+            "type": "devices.capabilities.mode",
+            "state": {
+              "instance": "fan_speed",
+              "value": 5
+            }
+          },
+          {
+            "type": "devices.capabilities.mode",
+            "state": {
+              "instance": "thermostat",
+              "value": "cool"
+            }
+          },
+          {
+            "type": "devices.capabilities.on_off",
+            "state": {
+              "instance": "on",
+              "value": true
+            }
+          }
+        ],
+        "properties": [
+          {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "humidity",
+              "value": 22
+            }
+          },
+          {
+            "type": "devices.properties.float",
+            "state": {
+              "instance": "temperature",
+              "value": 20
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
+
+Machine
+Checks
+Region
+Process
+Size/CPU

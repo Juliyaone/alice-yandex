@@ -697,10 +697,15 @@ const fanSpeedMapForApi = {
 };
 
 const fanSpeedMapForYandex = {
+  "1": "low",
   "2": "low",
+  "3": "auto",
   "4": "auto",
+  "5": "medium",
   "6": "medium",
+  "7": "high",
   "8": "high",
+  "9": "turbo",
   "10": "turbo"
 };
 
