@@ -1,0 +1,102 @@
+ОТВЕТ ЯНДЕКСУ СПИСОК УСТРОЙСТВ {
+  "request_id": "39de39d6-7af1-481f-8afe-6ef395b5dd7b",
+  "payload": {
+    "user_id": "23",
+    "devices": [
+      {
+        "id": "20",
+        "name": "Вентиляционная установка",
+        "description": "",
+        "room": "",
+        "type": "devices.types.thermostat.ac",
+        "capabilities": [
+          {
+            "type": "devices.capabilities.range",
+            "retrievable": true,
+            "parameters": {
+              "instance": "temperature",
+              "random_access": true,
+              "range": {
+                "max": 30,
+                "min": 15,
+                "precision": 1
+              },
+              "unit": "unit.temperature.celsius"
+            }
+          },
+          {
+            "type": "devices.capabilities.mode",
+            "retrievable": true,
+            "parameters": {
+              "instance": "fan_speed",
+              "modes": [
+                {
+                  "value": "high"
+                },
+                {
+                  "value": "medium"
+                },
+                {
+                  "value": "low"
+                },
+                {
+                  "value": "auto"
+                },
+                {
+                  "value": "turbo"
+                }
+              ]
+            }
+          },
+          {
+            "type": "devices.capabilities.mode",
+            "retrievable": true,
+            "parameters": {
+              "instance": "thermostat",
+              "modes": [
+                {
+                  "value": "fan_only"
+                },
+                {
+                  "value": "heat"
+                },
+                {
+                  "value": "cool"
+                },
+                {
+                  "value": "auto"
+                }
+              ]
+            }
+          },
+          {
+            "type": "devices.capabilities.on_off",
+            "retrievable": true
+          }
+        ],
+        "properties": [
+          {
+            "type": "devices.properties.float",
+            "retrievable": true,
+            "parameters": {
+              "instance": "temperature",
+              "unit": "unit.temperature.celsius"
+            }
+          },
+          {
+            "type": "devices.properties.float",
+            "retrievable": true,
+            "parameters": {
+              "instance": "humidity",
+              "unit": "unit.percent"
+            }
+          }
+        ],
+        "device_info": {
+          "manufacturer": "Horynize",
+          "model": ""
+        }
+      }
+    ]
+  }
+}

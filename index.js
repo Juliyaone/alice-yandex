@@ -696,6 +696,14 @@ const fanSpeedMapForApi = {
   "turbo": "10"
 };
 
+const fanSpeedMapForYandex = {
+  "2": "low",
+  "4": "auto",
+  "6": "medium",
+  "8": "high",
+  "10": "turbo"
+};
+
 const modeMapForApi = {
   "fan_only": "1",
   "cool": "2",
@@ -721,7 +729,7 @@ const handlersChangeParams = {
   "devices.capabilities.mode": (capability, params) => {
     const { instance, value } = capability.state;
     if (instance === "fan_speed") {
-      params.fanTarget = fanSpeedMapForApi[value] || value;
+      params.fanTarget = fanSpeedMapForYandex[value] || value;
     } else if (instance === "thermostat") {
       params.res = modeMapForApi[value] || value;
     }
