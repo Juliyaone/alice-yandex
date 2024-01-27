@@ -446,10 +446,15 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         console.log("humRoom", humRoomData);
 
         const fanSpeedMapForYandex = {
+          "1": "low",
           "2": "low",
+          "3": "auto",
           "4": "auto",
+          "5": "medium",
           "6": "medium",
+          "7": "high",
           "8": "high",
+          "9": "turbo",
           "10": "turbo"
         };
         let fanSpeedPData = deviceData.fanSpeedP;
@@ -696,18 +701,7 @@ const fanSpeedMapForApi = {
   "turbo": "10"
 };
 
-const fanSpeedMapForYandex = {
-  "1": "low",
-  "2": "low",
-  "3": "auto",
-  "4": "auto",
-  "5": "medium",
-  "6": "medium",
-  "7": "high",
-  "8": "high",
-  "9": "turbo",
-  "10": "turbo"
-};
+
 
 const modeMapForApi = {
   "fan_only": "1",
@@ -734,7 +728,7 @@ const handlersChangeParams = {
   "devices.capabilities.mode": (capability, params) => {
     const { instance, value } = capability.state;
     if (instance === "fan_speed") {
-      params.fanTarget = fanSpeedMapForYandex[value] || value;
+      params.fanTarget = fanSpeedMapForApi[value] || value;
     } else if (instance === "thermostat") {
       params.res = modeMapForApi[value] || value;
     }
