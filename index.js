@@ -258,7 +258,7 @@ app.post("/v1.0/refresh_token", async (req, res) => {
 
 // Информация об устройствах пользователя
 app.get("/v1.0/user/devices", async (req, res) => {
-  console.log("Информация об устройствах пользователя app.get/v1.0/user/devices");
+  console.log("ЗАПРОС СПИСОК УСТРОЙСТВ /v1.0/user/devices");
 
   try {
 
@@ -378,13 +378,13 @@ app.get("/v1.0/user/devices", async (req, res) => {
     
     // отправляем ответ
 
-    // console.log("ответ яндексу об устройствах пользователя",  JSON.stringify({
-    //   "request_id": requestId,
-    //   "payload": {
-    //     "user_id": String(userId),
-    //     "devices": devices
-    //   }
-    // }, null, 2));
+    console.log("ОТВЕТ ЯНДЕКСУ СПИСОК УСТРОЙСТВ",  JSON.stringify({
+      "request_id": requestId,
+      "payload": {
+        "user_id": String(userId),
+        "devices": devices
+      }
+    }, null, 2));
     
     res.json({
       "request_id": requestId,
@@ -408,7 +408,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
 // Информация о состояниях устройств пользователя
 app.post("/v1.0/user/devices/query", async (req, res) => {
-  console.log("Информация о состояниях устройств пользователя app.get/v1.0/user/devices/query");
+  console.log("ЗАПРОС СОСТОЯНИЕ УСТРОЙСТВ /v1.0/user/devices/query");
 
   userJwtYandex = req.headers.authorization;
   const requestId = req.headers["x-request-id"];
@@ -525,12 +525,12 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       }
     }
 
-    // console.log("ответ яндексу о состояниях устройств пользователя", JSON.stringify({
-    //   "request_id": String(requestId),
-    //   "payload": {
-    //     "devices": devicesPayload,
-    //   },
-    // }, null, 2));
+    console.log("ОТВЕТ ЯНДЕКСУ СОСТОЯНИЕ УСТРОЙСТВ", JSON.stringify({
+      "request_id": String(requestId),
+      "payload": {
+        "devices": devicesPayload,
+      },
+    }, null, 2));
 
     // Отправляем ответ
     res.json({
@@ -548,7 +548,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
 
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
-  console.log("Изменение состояния у устройств пользователя");
+  console.log("ЗАПРОС ИЗМЕНЕНИЕ СОСТОЯНИЯ УСТРОЙСТВ /v1.0/user/devices/action");
   try {
     const actions = req.body.payload.devices;
     let results = [];
@@ -572,6 +572,14 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         status: "DONE" // или "ERROR" в случае ошибки
       });
     }
+
+
+    console.log("ОТВЕТ ЯНДЕКСУ ИЗМЕНЕНИЕ УСТРОЙСТВ", JSON.stringify({
+      request_id: req.headers["x-request-id"],
+      payload: {
+        devices: results
+      }
+    }, null, 2));
 
     res.json({
       request_id: req.headers["x-request-id"],
