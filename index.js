@@ -218,7 +218,7 @@ app.post("/v1.0/refresh_token", async (req, res) => {
     // Проверяем refresh_token
     const decoded = jwt.verify(refresh_token, secretKeyForToken);
 
-    const tokenIsValid = await checkRefreshTokenInDatabase(decoded.userId, refresh_token);
+    const tokenIsValid = await checkYandexRefreshTokenInDatabase(decoded.userId, refresh_token);
 
     if (tokenIsValid) {
       // Генерируем новый access_token
@@ -577,8 +577,8 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
   }
 }
 
-// Проверяем рефреш токен в базе
-async function checkRefreshTokenInDatabase(userId, refreshToken) {
+// Проверяем яндекс рефреш токен в базе
+async function checkYandexRefreshTokenInDatabase(userId, refreshToken) {
   try {
     const response = await axios.post("https://smart.horynize.ru/api/users/check_refresh_token_yandex.php", {
       userId: Number(userId),
@@ -596,40 +596,90 @@ async function checkRefreshTokenInDatabase(userId, refreshToken) {
   }
 }
 
+// Проверяем рефреш токен в базе
+async function checkRefreshTokenAndNewToken(userId, refreshToken) {
+  try {
+    const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token.php", {
+      userId: Number(userId),
+      refreshToken: refreshToken
+    });
+
+    if (response.data && response.data.jwt && response.data.jwtRefresh) {
+      userJwt = response.data.jwt;
+      jwtRefresh = response.data.jwtRefresh;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    console.error("Error checking refresh token:", error);
+    return false; // В случае ошибки считаем токен недействительным
+  }
+}
+
+// Функция для обработки запросов с перехватом ошибки невалидного токена
+async function handleRequestWithTokenRefresh(requestFunction, ...args) {
+  try {
+    // Попытка выполнить запрос
+    return await requestFunction(...args);
+  } catch (error) {
+    // Проверка, является ли ошибка связанной с невалидностью токена
+    if (/* условие, определяющее ошибку невалидного токена */) {
+      // Попытка обновить токен
+      const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
+      if (success) {
+        // Повторный запрос с новым токеном после успешного обновления
+        return await requestFunction(...args);
+      } else {
+        // Ошибка обновления токена, необходимо обработать
+        throw new Error("Не удалось обновить токен");
+      }
+    } else {
+      // Передать ошибку дальше, если она не связана с токеном
+      throw error;
+    }
+  }
+}
+
 // Функция для запроса списка устройств
 async function fetchUserDevices(userId, userJwt) {
-  return await axios.post("https://smart.horynize.ru/api/vent-units/all", {
-    "userId": String(userId),
-    "status": "1"
-  }, {
-    headers: {
-      "Authorization": `Bearer ${userJwt}`,
-      "Content-Type": "application/json"
-    }
-  });
+    try {
+      const response = await axios.post("https://smart.horynize.ru/api/vent-units/all", {
+        "userId": String(userId),
+        "status": "1"
+      }, {
+        headers: {
+          "Authorization": `Bearer ${userJwt}`,
+          "Content-Type": "application/json"
+        }
+      });
+      return response;
+    } catch (error) {
+        console.error("Error getting parameters:", error);
+        throw error;
+      }
 }
 
 // Функция для запроса параметров устройства
 async function fetchDeviceParams(controllerId, userJwt) {
-
-  return await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
-    "controllerId": String(controllerId),
-  }, {
-    headers: {
-      "Authorization": `Bearer ${userJwt}`,
-      "Content-Type": "application/json"
-    }
-  });
+  try {
+    const response =  await axios.post("https://smart.horynize.ru/api/vent-units/getparams", {
+      "controllerId": String(controllerId),
+    }, {
+      headers: {
+        "Authorization": `Bearer ${userJwt}`,
+        "Content-Type": "application/json"
+      }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error getting parameters:", error);
+    throw error;
+  }
 }
 
 // Функция для изменения параметров устройства
 async function fetchDeviceChangeParams(params, userJwt) {
   try {
-
-    console.log("params", params);
-    console.log("userJwtPARAMS", userJwt);
-
-
     const response = await axios.post("https://smart.horynize.ru/api/vent-units/setparams", params, {
       headers: {
         "Authorization": `Bearer ${userJwt}`,
@@ -637,13 +687,7 @@ async function fetchDeviceChangeParams(params, userJwt) {
       }
     });
 
-    // Обработка успешного ответа
-    // if (response.data && response.data.message === " command send ") {
-    console.log("Command sent successfully");
     return response.data;
-    // } else {
-    //   throw new Error("Unexpected response from API");
-    // }
   } catch (error) {
     console.error("Error sending parameters:", error);
     throw error;
