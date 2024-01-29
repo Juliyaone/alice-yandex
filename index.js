@@ -18,6 +18,8 @@ let userId = "";
 
 let userJwt = "";
 
+let jwtRefresh = "";
+
 let devicesArray = [];
 
 
@@ -142,7 +144,9 @@ app.post("/v1.0/auth", async (req, res) => {
     if (response.status === 200 && response.data) {
 
       userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
-      userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа 
+      userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа
+      jwtRefresh = response.data["0"]?.jwt_refresh; // Извлечение jwt_refresh пользователя из ответа 
+
       devicesArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
       
       // console.log("userId", userId);
