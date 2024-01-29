@@ -17,13 +17,9 @@ const authorizationCodes = {};
 let userId = "";
 
 let userJwt = "";
-let userJwtYandex ="";
 
 let devicesArray = [];
 
-let devicesArrayYandex = [];
-
-let userDevicesParams = [];
 
 
 app.use(express.json());
@@ -61,26 +57,6 @@ app.post("/v1.0/user/unlink", async (req, res) => {
   }
 });
 
-// Страница авторизации
-// app.get("/v1.0/login", (req, res) => {
- 
-//   const { client_id, redirect_uri, state } = req.query;
-//   // Отображаем форму для ввода логина и пароля
-
-//   res.send(`
-//     <form action="/v1.0/auth" method="post">
-//       <input type="hidden" name="client_id" value="${client_id}">
-//       <input type="hidden" name="redirect_uri" value="${redirect_uri}">
-//       <input type="hidden" name="state" value="${state}">
-
-//       <label for="username">Логин:</label>
-//       <input type="text" id="username" name="username"><br>
-//       <label for="password">Пароль:</label>
-//       <input type="password" id="password" name="password"><br>
-//       <input type="submit" value="Войти">
-//     </form>
-//   `);
-// });
 // Страница авторизации
 app.get("/v1.0/login", (req, res) => {
   const { client_id, redirect_uri, state } = req.query;
@@ -400,7 +376,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
   try {
     // Извлекаем массив устройств из тела запроса
     const devicesArrayYandex = req.body.devices;
-    console.log("devicesArrayYandex", devicesArrayYandex);
 
     let devicesPayload = [];
 
@@ -412,22 +387,19 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
         const deviceData = getDevicesParamsResponse.data.data[0];
-        console.log("deviceData", deviceData);
-
-        let availableModes = getAvailableModes(deviceData.avalibleMode);
-        console.log("availableModes", availableModes);
+        // console.log("deviceData", deviceData);
 
         let enabledData = deviceData.enabled == "1" ? true : false;
-        console.log("enabledData", enabledData);
+        // console.log("enabledData", enabledData);
 
         let tempTargetData = Math.floor(deviceData.tempTarget);
-        console.log("tempTargetData", tempTargetData);
+        // console.log("tempTargetData", tempTargetData);
 
         let tempRoomData = Math.floor(deviceData.tempRoom);
-        console.log("tempRoomData", tempRoomData);
+        // console.log("tempRoomData", tempRoomData);
 
         let humRoomData = Math.floor(deviceData.humRoom);
-        console.log("humRoom", humRoomData);
+        // console.log("humRoom", humRoomData);
 
         const fanSpeedMapForYandex = {
           "1": "low",
@@ -534,7 +506,6 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
   }
 });
 
-
 // Изменение состояния у устройств
 app.post("/v1.0/user/devices/action", async (req, res) => {
   console.log("ЗАПРОС ИЗМЕНЕНИЕ СОСТОЯНИЯ УСТРОЙСТВ /v1.0/user/devices/action");
@@ -583,11 +554,10 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 });
 
 
-
 // Сохраняем рефреш токен в базу
 async function saveRefreshTokenToDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post("https://smart.horynize.ru/api/users/token_save.php", {
+    const response = await axios.post("https://smart.horynize.ru/api/users/token_save_yandex.php", {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -606,7 +576,7 @@ async function saveRefreshTokenToDatabase(userId, refreshToken) {
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenInDatabase(userId, refreshToken) {
   try {
-    const response = await axios.post("https://smart.horynize.ru/api/users/check_refresh_token.php", {
+    const response = await axios.post("https://smart.horynize.ru/api/users/check_refresh_token_yandex.php", {
       userId: Number(userId),
       tokenYandex: refreshToken
     });
@@ -685,8 +655,6 @@ const fanSpeedMapForApi = {
   "turbo": "10"
 };
 
-
-
 const modeMapForApi = {
   "fan_only": "1",
   "heat": "2",
@@ -735,8 +703,6 @@ function getAvailableModes(avalibleMode) {
   }
   return modes;
 }
-
-
 
 
 app.listen(port, () => {
