@@ -616,47 +616,47 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
   }
 }
 
-// Функция для обработки запросов с перехватом ошибки невалидного токена
-async function handleRequestWithTokenRefresh(requestFunction, ...args) {
-  try {
-    // Попытка выполнить запрос
-    return await requestFunction(...args);
-  } catch (error) {
-    // Проверка, является ли ошибка связанной с невалидностью токена
-    if (/* условие, определяющее ошибку невалидного токена */) {
-      // Попытка обновить токен
-      const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
-      if (success) {
-        // Повторный запрос с новым токеном после успешного обновления
-        return await requestFunction(...args);
-      } else {
-        // Ошибка обновления токена, необходимо обработать
-        throw new Error("Не удалось обновить токен");
-      }
-    } else {
-      // Передать ошибку дальше, если она не связана с токеном
-      throw error;
-    }
-  }
-}
+// // Функция для обработки запросов с перехватом ошибки невалидного токена
+// async function handleRequestWithTokenRefresh(requestFunction, ...args) {
+//   try {
+//     // Попытка выполнить запрос
+//     return await requestFunction(...args);
+//   } catch (error) {
+//     // Проверка, является ли ошибка связанной с невалидностью токена
+//     if (/* условие, определяющее ошибку невалидного токена */) {
+//       // Попытка обновить токен
+//       const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
+//       if (success) {
+//         // Повторный запрос с новым токеном после успешного обновления
+//         return await requestFunction(...args);
+//       } else {
+//         // Ошибка обновления токена, необходимо обработать
+//         throw new Error("Не удалось обновить токен");
+//       }
+//     } else {
+//       // Передать ошибку дальше, если она не связана с токеном
+//       throw error;
+//     }
+//   }
+// }
 
 // Функция для запроса списка устройств
 async function fetchUserDevices(userId, userJwt) {
-    try {
-      const response = await axios.post("https://smart.horynize.ru/api/vent-units/all", {
-        "userId": String(userId),
-        "status": "1"
-      }, {
-        headers: {
-          "Authorization": `Bearer ${userJwt}`,
-          "Content-Type": "application/json"
-        }
-      });
-      return response;
-    } catch (error) {
-        console.error("Error getting parameters:", error);
-        throw error;
+  try {
+    const response = await axios.post("https://smart.horynize.ru/api/vent-units/all", {
+      "userId": String(userId),
+      "status": "1"
+    }, {
+      headers: {
+        "Authorization": `Bearer ${userJwt}`,
+        "Content-Type": "application/json"
       }
+    });
+    return response;
+  } catch (error) {
+    console.error("Error getting devices:", error);
+    throw error;
+  }
 }
 
 // Функция для запроса параметров устройства
