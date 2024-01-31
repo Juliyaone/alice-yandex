@@ -3,7 +3,7 @@ const app = express();
 const { createClient } = require("redis");
 // Создание клиента Redis
 const client = createClient({
-  url: "redis://fill-black-darkness-1961.fly.dev:6379"
+  url: "redis://66.241.125.38:6379"
 });
 
 
