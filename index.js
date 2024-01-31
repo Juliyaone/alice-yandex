@@ -6,7 +6,6 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const { log } = require("console");
 
 require("dotenv").config();
 
@@ -600,7 +599,7 @@ async function checkYandexRefreshTokenInDatabase(userId, refreshToken) {
 async function checkRefreshTokenAndNewToken(userId, refreshToken) {
   try {
     const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token", {
-      userId: Number(userId),
+      userId: userId,
       refreshToken: refreshToken
     });
 
