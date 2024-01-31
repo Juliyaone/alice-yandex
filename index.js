@@ -4,6 +4,10 @@ const { createClient } = require("redis");
 // Создание клиента Redis
 const client = createClient();
 
+
+require("dotenv").config();
+
+
 const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 
@@ -11,7 +15,6 @@ const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
-require("dotenv").config();
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 
 
