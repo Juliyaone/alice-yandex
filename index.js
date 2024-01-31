@@ -23,9 +23,6 @@ let jwtRefresh = "";
 
 let devicesArray = [];
 
-console.log("jwtRefresh ПОСМОТРЕТЬ", jwtRefresh);
-
-
 
 app.use(express.json());
 
@@ -155,7 +152,7 @@ app.post("/v1.0/auth", async (req, res) => {
       // console.log("userId", userId);
       // console.log("userJwt", userJwt);
       // console.log("response.data", response.data);
-      console.log(("devicesArray", devicesArray));
+      // console.log(("devicesArray", devicesArray));
 
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
@@ -252,7 +249,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
     const getUserDevicesResponse = await enhancedFetchUserDevices(userId, userJwt);
 
     const ventUnits = getUserDevicesResponse.data["vent-units"];
-    console.log("ventUnits", ventUnits);
+    // console.log("ventUnits", ventUnits);
 
     let devices = [];
 
@@ -422,7 +419,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         };
         let fanSpeedPData = deviceData.fanSpeedP;
         fanSpeedPData = fanSpeedMapForYandex[fanSpeedPData] || fanSpeedPData;
-        console.log("fanSpeedPData", fanSpeedPData);
+        // console.log("fanSpeedPData", fanSpeedPData);
 
         const modeMap = {
           "1": "fan_only",
@@ -432,7 +429,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
         };
         let modeData = deviceData.res;
         modeData = modeMap[modeData] || modeData;
-        console.log("modeData", modeData);
+        // console.log("modeData", modeData);
       
         // Здесь формируется состояние устройства в соответствии с полученными данными
         devicesPayload.push({
@@ -493,12 +490,12 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
       }
     }
 
-    console.log("ОТВЕТ ЯНДЕКСУ СОСТОЯНИЕ УСТРОЙСТВ", JSON.stringify({
-      "request_id": String(requestId),
-      "payload": {
-        "devices": devicesPayload,
-      },
-    }, null, 2));
+    // console.log("ОТВЕТ ЯНДЕКСУ СОСТОЯНИЕ УСТРОЙСТВ", JSON.stringify({
+    //   "request_id": String(requestId),
+    //   "payload": {
+    //     "devices": devicesPayload,
+    //   },
+    // }, null, 2));
 
     // Отправляем ответ
     res.json({
@@ -541,12 +538,12 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
     }
 
 
-    console.log("ОТВЕТ ЯНДЕКСУ ИЗМЕНЕНИЕ УСТРОЙСТВ", JSON.stringify({
-      request_id: req.headers["x-request-id"],
-      payload: {
-        devices: results
-      }
-    }, null, 2));
+    // console.log("ОТВЕТ ЯНДЕКСУ ИЗМЕНЕНИЕ УСТРОЙСТВ", JSON.stringify({
+    //   request_id: req.headers["x-request-id"],
+    //   payload: {
+    //     devices: results
+    //   }
+    // }, null, 2));
 
     res.json({
       request_id: req.headers["x-request-id"],
