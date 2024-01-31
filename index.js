@@ -1,5 +1,9 @@
 const express = require("express");
 const app = express();
+const { createClient } = require("redis");
+// Создание клиента Redis
+const client = createClient();
+
 const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 
@@ -8,20 +12,56 @@ const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
-
-
 const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
+
+
+
+// Обработка ошибок подключения к Redis
+client.on("error", (err) => {
+  console.error("Ошибка подключения к Redis:", err);
+});
+
+// Подключаемся к Redis
+async function connectToRedis() {
+  try {
+    await client.connect();
+    console.log("Успешное подключение к Redis");
+  } catch (err) {
+    console.error("Не удалось подключиться к Redis:", err);
+    setTimeout(connectToRedis, 2000); // повторить попытку через 5 секунд
+  }
+}
+
+connectToRedis();
+
+// Функция для сохранения токена с TTL во временное хранилище
+async function storeTokenRedis(userId, token, tokenType, ttl) {
+  const key = `userToken:${userId}:${tokenType}`;
+  try {
+    // Сохранение токена с использованием setex
+    await client.setEx(key, ttl, token);
+    console.log(`Токен ${tokenType} успешно сохранён с TTL`);
+  } catch (err) {
+    console.error("Ошибка при сохранении токена", err);
+  }
+}
+
+// Функция для получения токена из Redis
+async function getTokenRedis(userId, tokenType) {
+  const key = `userToken:${userId}:${tokenType}`;
+  try {
+    const token = await client.get(key);
+    return token;
+  } catch (err) {
+    console.error("Ошибка при получении токена", err);
+    throw err; 
+  }
+}
+
 
 const authorizationCodes = {};
 
-let userId = "";
-
-let userJwt = "";
-
-let jwtRefresh = "";
-
-let devicesArray = [];
-
+const ttl = 3600;
 
 app.use(express.json());
 
@@ -142,16 +182,9 @@ app.post("/v1.0/auth", async (req, res) => {
 
     if (response.status === 200 && response.data) {
 
-      userId = response.data["0"]?.id_user; // Извлечение id пользователя из ответа
-      userJwt = response.data["0"]?.jwt; // Извлечение jwt пользователя из ответа
-      jwtRefresh = response.data["0"]?.jwt_refresh; // Извлечение jwt_refresh пользователя из ответа 
+      await storeTokenRedis(response.data["0"]?.id_user, response.data["0"]?.jwt, "jwt", ttl);
+      await storeTokenRedis(response.data["0"]?.id_user, response.data["0"]?.jwt_refresh, "refresh", ttl);
 
-      devicesArray = response.data.controllers[1]; // Извлечение id_controller пользователя из ответа
-      
-      // console.log("userId", userId);
-      // console.log("userJwt", userJwt);
-      // console.log("response.data", response.data);
-      // console.log(("devicesArray", devicesArray));
 
       // Успешная аутентификация, генерируем код авторизации
       const authCode = crypto.randomBytes(16).toString("hex"); // Простая генерация кода
@@ -162,8 +195,7 @@ app.post("/v1.0/auth", async (req, res) => {
       authorizationCodes[authCode] = {
         clientId: client_id,
         expiresAt: Date.now() + expiresIn * 1000,
-        userId: userId,
-        // Дополнительные данные, если необходимо, например, jwt
+        userId: response.data["0"]?.id_user,
       };
 
       // Устанавливаем таймер для удаления кода по истечении времени
@@ -196,7 +228,7 @@ app.post("/v1.0/token", async (req, res) => {
 
     // Сохраняем refresh token в базу данных
     try {
-      await saveRefreshTokenToDatabase(userId, refreshToken);
+      await saveRefreshTokenYandexToDatabase(userId, refreshToken);
     } catch (innerError) {
       console.error("Error saving refresh token:", innerError);
       // Обработка ошибки сохранения refresh token
@@ -237,13 +269,16 @@ app.post("/v1.0/refresh_token", async (req, res) => {
 
 // Информация об устройствах пользователя
 app.get("/v1.0/user/devices", async (req, res) => {
-  console.log("ЗАПРОС СПИСОК УСТРОЙСТВ /v1.0/user/devices");
+  console.log("ЗАПРОС СПИСОК УСТРОЙСТВ");
 
   try {
 
-    const userJwtYandex = req.headers["authorization"];
+    const token = req.headers.authorization.split(" ")[1]; // Получаем токен из заголовка
+    const decoded = jwt.verify(token, secretKeyForToken); // Верифицируем токен с помощью вашего секретного ключа
+    const userId = decoded.userId; // Извлекаем userId из токена
     const requestId = req.headers["x-request-id"];
     
+    const userJwt = await getTokenRedis(userId, "jwt"); // Извлекаем jwt для userId
     // Запрос на получение списка устройств
     const getUserDevicesResponse = await enhancedFetchUserDevices(userId, userJwt);
 
@@ -373,7 +408,9 @@ app.get("/v1.0/user/devices", async (req, res) => {
 app.post("/v1.0/user/devices/query", async (req, res) => {
   console.log("ЗАПРОС СОСТОЯНИЕ УСТРОЙСТВ /v1.0/user/devices/query");
 
-  const userJwtYandex = req.headers.authorization;
+  const token = req.headers.authorization.split(" ")[1]; // Получаем токен из заголовка
+  const decoded = jwt.verify(token, secretKeyForToken); // Верифицируем токен с помощью вашего секретного ключа
+  const userId = decoded.userId; // Извлекаем userId из токена
   const requestId = req.headers["x-request-id"];
 
   try {
@@ -381,11 +418,13 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     const devicesArrayYandex = req.body.devices;
 
     let devicesPayload = [];
+    const userJwt = await getTokenRedis(userId, "jwt"); // Извлекаем jwt для userId
+
 
     for (const device of devicesArrayYandex) {
 
       // Запрос на получение параметров устройства
-      const getDevicesParamsResponse = await enhancedFetchDeviceParams(device.id, userJwt);
+      const getDevicesParamsResponse = await enhancedFetchDeviceParams(userId, device.id, userJwt);
 
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
@@ -515,6 +554,9 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
   try {
     const actions = req.body.payload.devices;
     let results = [];
+    const token = req.headers.authorization.split(" ")[1]; // Получаем токен из заголовка
+    const decoded = jwt.verify(token, secretKeyForToken); // Верифицируем токен с помощью вашего секретного ключа
+    const userId = decoded.userId; // Извлекаем userId из токена
 
     for (const action of actions) {
       const deviceId = action.id;
@@ -527,8 +569,8 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
           handler(capability, params);
         }
       });
-
-      await enhancedFetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
+      const userJwt = await getTokenRedis(userId, "jwt"); // Извлекаем jwt для userId
+      await enhancedFetchDeviceChangeParams(userId, params, userJwt); // Вызов функции изменения параметров
 
       results.push({
         id: deviceId,
@@ -558,7 +600,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
 
 
 // Сохраняем рефреш токен в базу
-async function saveRefreshTokenToDatabase(userId, refreshToken) {
+async function saveRefreshTokenYandexToDatabase(userId, refreshToken) {
   try {
     const response = await axios.post("https://smart.horynize.ru/api/users/token_save_yandex.php", {
       userId: Number(userId),
@@ -597,12 +639,7 @@ async function checkYandexRefreshTokenInDatabase(userId, refreshToken) {
 
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenAndNewToken(userId, refreshToken) {
-
-  console.log("СТАРЫЙ РЕФРЕШ ТОКЕН", refreshToken);
-  console.log("userId", userId);
-  console.log("userId", typeof(userId));
-
-
+  console.log("ЗАПРОС НА РЕФРЕШ");
   try {
     const response = await axios.post("https://smart.horynize.ru/api/users/check_refresh_token.php", {
       userId: String(userId),
@@ -611,12 +648,10 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
 
     console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ И ВОТ ОТВЕТ", response);
 
-    if (response.data && response.data.jwt && response.data.refreshToken) {
-      userJwt = response.data.jwt;
-      jwtRefresh = response.data.refreshToken;
+    if (response.data && response.data.jwt && response.data.refreshToken && response.data.idUser) {
+      await storeTokenRedis(response.data.idUser, response.data.jwt, "jwt", ttl);
+      await storeTokenRedis(response.data.idUser, response.data.refreshToken, "refresh", ttl);
 
-      console.log("РЕФРЕШ NEWuserJwt", userJwt);
-      console.log("РЕФРЕШ NEWjwtRefresh", jwtRefresh);
     } else {
       return false;
     }
@@ -627,7 +662,7 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
 }
 
 // Функция для обработки запросов с перехватом ошибки невалидного токена
-async function handleRequestWithTokenRefresh(requestFunction, ...args) {
+async function handleRequestWithTokenRefresh(userId, requestFunction, ...args) {
   let response; // Определяем переменную response
   try {
     // Попытка выполнить запрос и присваиваем результат переменной response
@@ -636,7 +671,8 @@ async function handleRequestWithTokenRefresh(requestFunction, ...args) {
   } catch (error) {
     // Теперь переменная response доступна и содержит информацию об ошибке
     if (error.response && (error.response.status === 401 || error.response.status === 400)) {
-      // Попытка обновить токен
+      // Попытка обновить токен      
+      const jwtRefresh = await getTokenRedis(userId, "refresh");
       const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
       if (success) {
         // Повторный запрос с новым токеном после успешного обновления
@@ -673,7 +709,7 @@ async function fetchUserDevices(userId, userJwt) {
   }
 }
 async function enhancedFetchUserDevices(userId, userJwt) {
-  return handleRequestWithTokenRefresh(fetchUserDevices, userId, userJwt);
+  return handleRequestWithTokenRefresh(userId, fetchUserDevices, userId, userJwt);
 }
 
 // Функция для запроса параметров устройства
@@ -693,8 +729,8 @@ async function fetchDeviceParams(controllerId, userJwt) {
     throw error;
   }
 }
-async function enhancedFetchDeviceParams(controllerId, userJwt) {
-  return handleRequestWithTokenRefresh(fetchDeviceParams, controllerId, userJwt);
+async function enhancedFetchDeviceParams(userId, controllerId, userJwt) {
+  return handleRequestWithTokenRefresh(userId, fetchDeviceParams, controllerId, userJwt);
 }
 
 // Функция для изменения параметров устройства
@@ -713,8 +749,8 @@ async function fetchDeviceChangeParams(params, userJwt) {
     throw error;
   }
 }
-async function enhancedFetchDeviceChangeParams(params, userJwt) {
-  return handleRequestWithTokenRefresh(fetchDeviceChangeParams, params, userJwt);
+async function enhancedFetchDeviceChangeParams(userId, params, userJwt) {
+  return handleRequestWithTokenRefresh(userId, fetchDeviceChangeParams, params, userJwt);
 }
 
 // Объекты карты для соответствия значений
@@ -774,6 +810,15 @@ function getAvailableModes(avalibleMode) {
   }
   return modes;
 }
+
+
+// При завершении работы приложения закрываем соединение с Redis
+process.on("SIGINT", async () => {
+  console.log("Закрытие соединения с Redis...");
+  await client.quit();
+  console.log("Соединение с Redis закрыто.");
+  process.exit(0);
+});
 
 
 app.listen(port, () => {
