@@ -43,6 +43,7 @@ client.on("error", (err) => {
 
 // Функция для сохранения токена с TTL во временное хранилище
 async function storeTokenRedis(userId, token, tokenType, ttl) {
+  console.log("userId, token, tokenType, ttl", userId, token, tokenType, ttl);
   const key = `userToken:${userId}:${tokenType}`;
   try {
     // Сохранение токена с использованием setex
