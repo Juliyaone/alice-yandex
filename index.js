@@ -602,10 +602,13 @@ async function checkYandexRefreshTokenInDatabase(userId, refreshToken) {
 // Проверяем рефреш токен в базе
 async function checkRefreshTokenAndNewToken(userId, refreshToken) {
   try {
-    const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token.php", {
+    const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token", {
       userId: Number(userId),
       refreshToken: refreshToken
     });
+
+
+    console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ", response);
 
     if (response.data && response.data.jwt && response.data.jwtRefresh) {
       userJwt = response.data.jwt;
