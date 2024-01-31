@@ -241,11 +241,11 @@ app.get("/v1.0/user/devices", async (req, res) => {
 
   try {
 
-    userJwtYandex = req.headers["authorization"];
+    const userJwtYandex = req.headers["authorization"];
     const requestId = req.headers["x-request-id"];
     
     // Запрос на получение списка устройств
-    const getUserDevicesResponse = await enhancedFetchUserDevices(userId, userJwt);
+    const getUserDevicesResponse = await fetchUserDevices(userId, userJwt);
 
     const ventUnits = getUserDevicesResponse.data["vent-units"];
     // console.log("ventUnits", ventUnits);
@@ -341,13 +341,13 @@ app.get("/v1.0/user/devices", async (req, res) => {
     
     // отправляем ответ
 
-    console.log("ОТВЕТ ЯНДЕКСУ СПИСОК УСТРОЙСТВ",  JSON.stringify({
-      "request_id": requestId,
-      "payload": {
-        "user_id": String(userId),
-        "devices": devices
-      }
-    }, null, 2));
+    // console.log("ОТВЕТ ЯНДЕКСУ СПИСОК УСТРОЙСТВ",  JSON.stringify({
+    //   "request_id": requestId,
+    //   "payload": {
+    //     "user_id": String(userId),
+    //     "devices": devices
+    //   }
+    // }, null, 2));
     
     res.json({
       "request_id": requestId,
@@ -373,7 +373,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
 app.post("/v1.0/user/devices/query", async (req, res) => {
   console.log("ЗАПРОС СОСТОЯНИЕ УСТРОЙСТВ /v1.0/user/devices/query");
 
-  userJwtYandex = req.headers.authorization;
+  const userJwtYandex = req.headers.authorization;
   const requestId = req.headers["x-request-id"];
 
   try {
@@ -385,7 +385,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     for (const device of devicesArrayYandex) {
 
       // Запрос на получение параметров устройства
-      const getDevicesParamsResponse = await enhancedFetchDeviceParams(device.id, userJwt);
+      const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
 
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
@@ -528,7 +528,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         }
       });
 
-      await enhancedFetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
+      await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
 
       results.push({
         id: deviceId,
@@ -595,61 +595,6 @@ async function checkYandexRefreshTokenInDatabase(userId, refreshToken) {
   }
 }
 
-// Проверяем рефреш токен в базе
-async function checkRefreshTokenAndNewToken(userId, refreshToken) {
-
-
-  console.log("Старые ТОКЕНЫ", refreshToken);
-
-  try {
-    const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token", {
-      userId: String(userId),
-      refreshToken: String(refreshToken)
-    });
-
-
-    console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ И ВОТ ОТВЕТ", response);
-
-    if (response.data && response.data.jwt && response.data.refreshToken) {
-      userJwt = response.data.jwt;
-      jwtRefresh = response.data.refreshToken;
-
-      console.log("РЕФРЕШ NEWuserJwt", userJwt);
-      console.log("РЕФРЕШ NEWjwtRefresh", jwtRefresh);
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error("Error checking refresh token:", error);
-    return false; // В случае ошибки считаем токен недействительным
-  }
-}
-
-// Функция для обработки запросов с перехватом ошибки невалидного токена
-async function handleRequestWithTokenRefresh(requestFunction, ...args) {
-  let response; // Определяем переменную response
-  try {
-    // Попытка выполнить запрос и присваиваем результат переменной response
-    response = await requestFunction(...args);
-    return response; // Возвращаем успешный ответ
-  } catch (error) {
-    // Теперь переменная response доступна и содержит информацию об ошибке
-    if (error.response && (error.response.status === 401 || error.response.status === 400)) {
-      // Попытка обновить токен
-      const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
-      if (success) {
-        // Повторный запрос с новым токеном после успешного обновления
-        return await requestFunction(...args);
-      } else {
-        // Ошибка обновления токена, необходимо обработать
-        throw new Error("Не удалось обновить токен");
-      }
-    } else {
-      // Передать ошибку дальше, если она не связана с токеном
-      throw error;
-    }
-  }
-}
 
 
 // Функция для запроса списка устройств
@@ -671,9 +616,6 @@ async function fetchUserDevices(userId, userJwt) {
     throw error;
   }
 }
-async function enhancedFetchUserDevices(userId, userJwt) {
-  return handleRequestWithTokenRefresh(fetchUserDevices, userId, userJwt);
-}
 
 // Функция для запроса параметров устройства
 async function fetchDeviceParams(controllerId, userJwt) {
@@ -692,9 +634,7 @@ async function fetchDeviceParams(controllerId, userJwt) {
     throw error;
   }
 }
-async function enhancedFetchDeviceParams(controllerId, userJwt) {
-  return handleRequestWithTokenRefresh(fetchDeviceParams, controllerId, userJwt);
-}
+
 
 // Функция для изменения параметров устройства
 async function fetchDeviceChangeParams(params, userJwt) {
@@ -712,9 +652,7 @@ async function fetchDeviceChangeParams(params, userJwt) {
     throw error;
   }
 }
-async function enhancedFetchDeviceChangeParams(params, userJwt) {
-  return handleRequestWithTokenRefresh(fetchDeviceChangeParams, params, userJwt);
-}
+
 
 // Объекты карты для соответствия значений
 const fanSpeedMapForApi = {
