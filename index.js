@@ -19,10 +19,7 @@ const secretKeyForToken = process.env.SECRET_KEY_FOR_TOKEN;
 
 
 
-// Обработка ошибок подключения к Redis
-client.on("error", (err) => {
-  console.error("Ошибка подключения к Redis:", err);
-});
+
 
 // Подключаемся к Redis
 async function connectToRedis() {
@@ -36,6 +33,11 @@ async function connectToRedis() {
 }
 
 connectToRedis();
+
+// Обработка ошибок подключения к Redis
+client.on("error", (err) => {
+  console.error("Ошибка подключения к Redis:", err);
+});
 
 // Функция для сохранения токена с TTL во временное хранилище
 async function storeTokenRedis(userId, token, tokenType, ttl) {
