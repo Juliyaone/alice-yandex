@@ -603,12 +603,12 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
 
   try {
     const response = await axios.post("https://smart.horynize.ru/api/check_refresh_token", {
-      userId: userId,
-      refreshToken: refreshToken
+      userId: String(userId),
+      refreshToken: String(refreshToken)
     });
 
 
-    console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ", response);
+    console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ И ВОТ ОТВЕТ", response);
 
     if (response.data && response.data.jwt && response.data.refreshToken) {
       userJwt = response.data.jwt;
