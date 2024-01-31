@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const { createClient } = require("redis");
 // Создание клиента Redis
-const client = createClient();
+const client = createClient({
+  url: "redis://66.241.125.38:80" // замените <хост> и <порт> реальными значениями
+});
 
 
 require("dotenv").config();
