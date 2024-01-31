@@ -2,9 +2,7 @@ const express = require("express");
 const app = express();
 const { createClient } = require("redis");
 // Создание клиента Redis
-const client = createClient({
-  url: "redis://66.241.125.38:6379"
-});
+const client = createClient();
 
 
 require("dotenv").config();
@@ -30,7 +28,7 @@ async function connectToRedis() {
     console.log("Успешное подключение к Redis");
   } catch (err) {
     console.error("Не удалось подключиться к Redis:", err);
-    // setTimeout(connectToRedis, 15000); // повторить попытку через 5 секунд
+    // setTimeout(connectToRedis, 15000); // повторить попытку через 15 секунд
   }
 }
 
