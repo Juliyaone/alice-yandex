@@ -3,7 +3,7 @@ const app = express();
 const { createClient } = require("redis");
 // Создание клиента Redis
 const client = createClient({
-  url: "redis://redis-17107.c326.us-east-1-3.ec2.cloud.redislabs.com:17107" // замените <хост> и <порт> реальными значениями
+  url: "redis://66.241.125.38:443" // замените <хост> и <порт> реальными значениями
 });
 
 
