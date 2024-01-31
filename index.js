@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const { createClient } = require("redis");
 // Создание клиента Redis
-const client = createClient();
+const client = createClient({
+  url: "redis://fill-black-darkness-1961.fly.dev:6379"
+});
 
 
 require("dotenv").config();
