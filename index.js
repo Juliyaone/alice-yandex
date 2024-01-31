@@ -606,9 +606,9 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
 
     console.log("ЗАПРОСИЛИ НОВЫЕ ТОКЕНЫ", response);
 
-    if (response.data && response.data.jwt && response.data.jwtRefresh) {
+    if (response.data && response.data.jwt && response.data.refreshToken) {
       userJwt = response.data.jwt;
-      jwtRefresh = response.data.jwtRefresh;
+      jwtRefresh = response.data.refreshToken;
 
       console.log("РЕФРЕШ NEWuserJwt", userJwt);
       console.log("РЕФРЕШ NEWjwtRefresh", jwtRefresh);
