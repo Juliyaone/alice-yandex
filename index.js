@@ -6,6 +6,7 @@ app.use(express.urlencoded({ extended: true }));
 const axios = require("axios");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const { log } = require("console");
 
 require("dotenv").config();
 
@@ -21,6 +22,8 @@ let userJwt = "";
 let jwtRefresh = "";
 
 let devicesArray = [];
+
+console.log("jwtRefresh ПОСМОТРЕТЬ", jwtRefresh);
 
 
 
@@ -246,7 +249,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
     const requestId = req.headers["x-request-id"];
     
     // Запрос на получение списка устройств
-    const getUserDevicesResponse = await fetchUserDevices(userId, userJwt);
+    const getUserDevicesResponse = await enhancedFetchUserDevices(userId, userJwt);
 
     const ventUnits = getUserDevicesResponse.data["vent-units"];
     console.log("ventUnits", ventUnits);
@@ -386,7 +389,7 @@ app.post("/v1.0/user/devices/query", async (req, res) => {
     for (const device of devicesArrayYandex) {
 
       // Запрос на получение параметров устройства
-      const getDevicesParamsResponse = await fetchDeviceParams(device.id, userJwt);
+      const getDevicesParamsResponse = await enhancedFetchDeviceParams(device.id, userJwt);
 
       // Проверяем наличие данных
       if (getDevicesParamsResponse.data && getDevicesParamsResponse.data.data.length > 0) {
@@ -529,7 +532,7 @@ app.post("/v1.0/user/devices/action", async (req, res) => {
         }
       });
 
-      await fetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
+      await enhancedFetchDeviceChangeParams(params, userJwt); // Вызов функции изменения параметров
 
       results.push({
         id: deviceId,
@@ -607,6 +610,9 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
     if (response.data && response.data.jwt && response.data.jwtRefresh) {
       userJwt = response.data.jwt;
       jwtRefresh = response.data.jwtRefresh;
+
+      console.log("РЕФРЕШ NEWuserJwt", userJwt);
+      console.log("РЕФРЕШ NEWjwtRefresh", jwtRefresh);
     } else {
       return false;
     }
@@ -616,29 +622,32 @@ async function checkRefreshTokenAndNewToken(userId, refreshToken) {
   }
 }
 
-// // Функция для обработки запросов с перехватом ошибки невалидного токена
-// async function handleRequestWithTokenRefresh(requestFunction, ...args) {
-//   try {
-//     // Попытка выполнить запрос
-//     return await requestFunction(...args);
-//   } catch (error) {
-//     // Проверка, является ли ошибка связанной с невалидностью токена
-//     if (/* условие, определяющее ошибку невалидного токена */) {
-//       // Попытка обновить токен
-//       const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
-//       if (success) {
-//         // Повторный запрос с новым токеном после успешного обновления
-//         return await requestFunction(...args);
-//       } else {
-//         // Ошибка обновления токена, необходимо обработать
-//         throw new Error("Не удалось обновить токен");
-//       }
-//     } else {
-//       // Передать ошибку дальше, если она не связана с токеном
-//       throw error;
-//     }
-//   }
-// }
+// Функция для обработки запросов с перехватом ошибки невалидного токена
+async function handleRequestWithTokenRefresh(requestFunction, ...args) {
+  let response; // Определяем переменную response
+  try {
+    // Попытка выполнить запрос и присваиваем результат переменной response
+    response = await requestFunction(...args);
+    return response; // Возвращаем успешный ответ
+  } catch (error) {
+    // Теперь переменная response доступна и содержит информацию об ошибке
+    if (error.response && (error.response.status === 401 || error.response.status === 400)) {
+      // Попытка обновить токен
+      const success = await checkRefreshTokenAndNewToken(userId, jwtRefresh);
+      if (success) {
+        // Повторный запрос с новым токеном после успешного обновления
+        return await requestFunction(...args);
+      } else {
+        // Ошибка обновления токена, необходимо обработать
+        throw new Error("Не удалось обновить токен");
+      }
+    } else {
+      // Передать ошибку дальше, если она не связана с токеном
+      throw error;
+    }
+  }
+}
+
 
 // Функция для запроса списка устройств
 async function fetchUserDevices(userId, userJwt) {
@@ -653,10 +662,14 @@ async function fetchUserDevices(userId, userJwt) {
       }
     });
     return response;
+
   } catch (error) {
     console.error("Error getting devices:", error);
     throw error;
   }
+}
+async function enhancedFetchUserDevices(userId, userJwt) {
+  return handleRequestWithTokenRefresh(fetchUserDevices, userId, userJwt);
 }
 
 // Функция для запроса параметров устройства
@@ -676,6 +689,9 @@ async function fetchDeviceParams(controllerId, userJwt) {
     throw error;
   }
 }
+async function enhancedFetchDeviceParams(controllerId, userJwt) {
+  return handleRequestWithTokenRefresh(fetchDeviceParams, controllerId, userJwt);
+}
 
 // Функция для изменения параметров устройства
 async function fetchDeviceChangeParams(params, userJwt) {
@@ -692,6 +708,9 @@ async function fetchDeviceChangeParams(params, userJwt) {
     console.error("Error sending parameters:", error);
     throw error;
   }
+}
+async function enhancedFetchDeviceChangeParams(params, userJwt) {
+  return handleRequestWithTokenRefresh(fetchDeviceChangeParams, params, userJwt);
 }
 
 // Объекты карты для соответствия значений
