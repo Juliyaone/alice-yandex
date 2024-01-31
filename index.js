@@ -30,7 +30,7 @@ async function connectToRedis() {
     console.log("Успешное подключение к Redis");
   } catch (err) {
     console.error("Не удалось подключиться к Redis:", err);
-    setTimeout(connectToRedis, 15000); // повторить попытку через 5 секунд
+    // setTimeout(connectToRedis, 15000); // повторить попытку через 5 секунд
   }
 }
 
