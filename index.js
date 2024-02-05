@@ -316,7 +316,7 @@ app.get("/v1.0/user/devices", async (req, res) => {
             "random_access": true,
             "range": {
               "max": 30,
-              "min": 15,
+              "min": 5,
               "precision": 1
             },
             "unit": "unit.temperature.celsius"
